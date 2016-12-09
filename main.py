@@ -57,17 +57,15 @@ if __name__ == "__main__":
     
     screen_width = 700
     screen_height = 400
+
     screen = pygame.display.set_mode([screen_width,screen_height])
-    screen.fill(colours.BLUE)
+    bgRect = Rect((0, 0), (screen_width, screen_height))
+    bgSurf = pygame.Surface(bgRect.size)
+    pygame.draw.rect(bgSurf, colours.BLUE, bgRect)
+
+    screen.blit(bgSurf, bgRect)
 
     robot = robot.Robot()
-    # surfRect = Rect((20, 20), (20, 20))
-    # surf = pygame.Surface(surfRect.size)
-
-    # surfRect = pygame.draw.rect(surf, colours.BLACK, surfRect)
-
-    # robot = pygame.image.load('images/robot.png').convert()
-    # robotPos = robot.get_bounding_rect()
 
     screen.blit(robot.surf, robot.rect)
     pygame.display.update()
@@ -82,7 +80,7 @@ if __name__ == "__main__":
             if event.type in (QUIT, KEYDOWN):
                 sys.exit()
 
-        screen.blit(screen, robot.rect, robot.rect)
+        screen.blit(bgSurf, robot.rect)         # TODO: Check if It is possible to just redraw a portion of the background.
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
@@ -98,21 +96,3 @@ if __name__ == "__main__":
 
         screen.blit(robot.surf, robot.rect)
         pygame.display.update()
-
-        # screen.blit(screen, robotPos, robotPos)
-
-        # timeDelta = clock.tick_busy_loop()
-        # timeDelta /= 1000.0
-
-        # moveX += pps[0] * timeDelta
-        # moveY += pps[1] * timeDelta
-        # if (moveX >= 1):
-        #     robotPos = robotPos.move(moveX, 0)
-        #     moveX = 0
-
-        # if (moveY >= 1):
-        #     robotPos = robotPos.move(0, moveY)
-        #     moveY = 0
-
-        # screen.blit(robot, robotPos)
-        # pygame.display.update()
