@@ -40,15 +40,66 @@ class REMain:
             self._running = False
 
         self._running = True
+        self.ring.draw(self.display_surf)
         while self._running:
             for event in pygame.event.get():
                 self._on_event(event)
-            self.ring.draw(self.display_surf)
             pygame.display.update()
 
         pygame.quit()
         sys.exit()
 
 if __name__ == "__main__":
-    app = REMain()
-    app.main_loop()
+    # app = REMain()
+    # app.main_loop()
+    
+    pygame.init()
+    
+    screen_width = 700
+    screen_height = 400
+    screen = pygame.display.set_mode([screen_width,screen_height])
+    screen.fill(colours.BLUE)
+
+    robot = pygame.image.load('images/robot.png').convert()
+    robotPos = robot.get_rect(center=(robot.get_width() / 2, robot.get_height() / 2))
+    robotPos.x = screen_width / 2
+    robotPos.y = screen_height / 2
+
+    print "X: " + str(robotPos.x) + " Center X: " + str(robotPos.centerx)
+
+    screen.blit(robot, robotPos)
+    pygame.display.update()
+
+    pps = (100, 0)
+
+    clock = pygame.time.Clock()
+    moveX = 0;
+    moveY = 0;
+    while 1:
+        for event in pygame.event.get():
+            if event.type in (QUIT, KEYDOWN):
+                sys.exit()
+
+        screen.blit(screen, robotPos, robotPos)
+        robotPos = robotPos.move(1,0)
+        screen.blit(robot, robotPos)
+        pygame.display.update()
+        pygame.time.delay(20)
+        
+        # screen.blit(screen, robotPos, robotPos)
+
+        # timeDelta = clock.tick_busy_loop()
+        # timeDelta /= 1000.0
+
+        # moveX += pps[0] * timeDelta
+        # moveY += pps[1] * timeDelta
+        # if (moveX >= 1):
+        #     robotPos = robotPos.move(moveX, 0)
+        #     moveX = 0
+
+        # if (moveY >= 1):
+        #     robotPos = robotPos.move(0, moveY)
+        #     moveY = 0
+
+        # screen.blit(robot, robotPos)
+        # pygame.display.update()
