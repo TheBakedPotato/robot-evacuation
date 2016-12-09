@@ -58,15 +58,11 @@ if __name__ == "__main__":
     screen_width = 700
     screen_height = 400
     screen = pygame.display.set_mode([screen_width,screen_height])
-    screen.fill(colours.BLUE)
+    screen.fill(colours.WHITE)
 
     robot = pygame.image.load('images/robot.png').convert()
-    robotPos = robot.get_rect(center=(robot.get_width() / 2, robot.get_height() / 2))
-    robotPos.x = screen_width / 2
-    robotPos.y = screen_height / 2
-
-    print "X: " + str(robotPos.x) + " Center X: " + str(robotPos.centerx)
-
+    robotPos = robot.get_bounding_rect()
+    
     screen.blit(robot, robotPos)
     pygame.display.update()
 
@@ -81,25 +77,19 @@ if __name__ == "__main__":
                 sys.exit()
 
         screen.blit(screen, robotPos, robotPos)
-        robotPos = robotPos.move(1,0)
+
+        timeDelta = clock.tick_busy_loop()
+        timeDelta /= 1000.0
+
+        moveX += pps[0] * timeDelta
+        moveY += pps[1] * timeDelta
+        if (moveX >= 1):
+            robotPos = robotPos.move(moveX, 0)
+            moveX = 0
+
+        if (moveY >= 1):
+            robotPos = robotPos.move(0, moveY)
+            moveY = 0
+
         screen.blit(robot, robotPos)
         pygame.display.update()
-        pygame.time.delay(20)
-        
-        # screen.blit(screen, robotPos, robotPos)
-
-        # timeDelta = clock.tick_busy_loop()
-        # timeDelta /= 1000.0
-
-        # moveX += pps[0] * timeDelta
-        # moveY += pps[1] * timeDelta
-        # if (moveX >= 1):
-        #     robotPos = robotPos.move(moveX, 0)
-        #     moveX = 0
-
-        # if (moveY >= 1):
-        #     robotPos = robotPos.move(0, moveY)
-        #     moveY = 0
-
-        # screen.blit(robot, robotPos)
-        # pygame.display.update()
