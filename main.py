@@ -67,6 +67,10 @@ if __name__ == "__main__":
 
     robot = robot.Robot()
 
+    robot.rect.x = (screen_width / 2)
+    robot.rect.y = (screen_height / 2)
+
+    
     screen.blit(robot.surf, robot.rect)
     pygame.display.update()
 
@@ -80,7 +84,7 @@ if __name__ == "__main__":
             if event.type in (QUIT, KEYDOWN):
                 sys.exit()
 
-        screen.blit(bgSurf, robot.rect)         # TODO: Check if It is possible to just redraw a portion of the background.
+        screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
