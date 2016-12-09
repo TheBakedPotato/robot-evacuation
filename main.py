@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Pygame and external libraries
-import pygame, sys
+import pygame, sys, math
 
 from pygame.locals import *
 
@@ -61,42 +61,65 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode([screen_width,screen_height])
     bgRect = Rect((0, 0), (screen_width, screen_height))
     bgSurf = pygame.Surface(bgRect.size)
-    pygame.draw.rect(bgSurf, colours.BLUE, bgRect)
+    pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
 
     screen.blit(bgSurf, bgRect)
 
     robot = robot.Robot()
-
-    robot.rect.x = (screen_width / 2)
-    robot.rect.y = (screen_height / 2)
-
     
+    robot.rect = robot.rect.move(screen_width / 2 - robot.rect.width / 2, screen_height / 2 - robot.rect.height / 2)
+
     screen.blit(robot.surf, robot.rect)
     pygame.display.update()
-
-    pps = (100, 0)
 
     clock = pygame.time.Clock()
     moveX = 0;
     moveY = 0;
-    while 1:
+    collided = False
+    ringRadius = 150
+    ringPos = (screen_width / 2, screen_height / 2)
+    angle = 32
+
+    x = round(ringRadius * math.cos(math.radians(angle)) + screen_width / 2)
+    y = round(ringRadius * math.sin(math.radians(angle)) + screen_height / 2)
+    print (x, y)
+
+    pps = (round(100 * math.cos(math.radians(angle))), round(100 * math.sin(math.radians(angle))))
+
+    while True:
         for event in pygame.event.get():
             if event.type in (QUIT, KEYDOWN):
                 sys.exit()
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
+        circleRect = pygame.draw.circle(screen, colours.BLUE, ringPos, ringRadius, 1)
+        
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
         moveX += pps[0] * timeDelta
         moveY += pps[1] * timeDelta
+        
         if (moveX >= 1):
-            robot.rect = robot.rect.move(moveX, 0)
+            robot.rect = robot.rect.move(1, 0)
+            moveX = 0
+        elif (moveX <= -1):
+            robot.rect = robot.rect.move(-1, 0)
             moveX = 0
 
         if (moveY >= 1):
-            robot.rect = robot.rect.move(0, moveY)
+            robot.rect = robot.rect.move(0, 1)
+            moveY = 0
+        elif (moveY <= -1):
+            robot.rect = robot.rect.move(0, -1)
             moveY = 0
 
-        screen.blit(robot.surf, robot.rect)
-        pygame.display.update()
+        if not collided:
+            screen.blit(robot.surf, robot.rect)
+            collided = math.sqrt((robot.rect.centerx - ringPos[0]) ** 2 + (robot.rect.centery - ringPos[1]) ** 2) >= ringRadius
+            pygame.display.update()
+            if collided:
+                print (robot.rect.centerx, robot.rect.centery)
+
+        else:
+            
