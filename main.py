@@ -69,22 +69,16 @@ if __name__ == "__main__":
 
     angle = - 3 * math.pi / 4
     ringPos = (screen_width / 2, screen_height / 2)
+    exitPos = (200, 200)
     ringRadius = 150
+
     robot1 = robot.Robot(100, ringPos, angle)
     robot2 = robot.Robot(100, ringPos, angle)
     ring = ring.Ring(ringPos, ringRadius)
 
-    # screen.blit(robot1.surf, robot1.rect)
-    # screen.blit(robot2.surf, robot2.rect)
-    # pygame.display.update()
-
     clock = pygame.time.Clock()
     foundPerimeter = False
     evacuated = False
-
-    rps = 100.0 / 150.0
-
-    exitPos = (200, 200)
 
     startTime = time()
 
@@ -94,8 +88,6 @@ if __name__ == "__main__":
                 sys.exit()
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
-        # circleRect = pygame.draw.circle(screen, colours.BLUE, ringPos, ringRadius, 1)
-        # exitRect = pygame.draw.rect(screen, colours.RED, pygame.Rect((exitPos[0] - 5, exitPos[1] - 5), (10, 10)))
         ring.draw(screen)
         screen.blit(robot1.surf, robot1.rect)
         screen.blit(robot2.surf, robot2.rect)
