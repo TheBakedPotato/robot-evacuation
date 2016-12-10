@@ -9,11 +9,13 @@ class Robot:
         self.moving = False
 
         self.speed = 100
-        self.surf = pygame.Surface(rect.size)
+        self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)
+        self.surf.fill((255, 255, 255, 0))
         self.rect = pygame.draw.rect(self.surf, colours.BLACK, rect)
         self.rect.centerx = self.centerx = startPos[0]
         self.rect.centery = self.centery = startPos[1]
         self.angle = angle
+        self.mask = pygame.mask.from_surface(self.surf)
 
     def findPoint(self, start, distance, timeDelta):
         if not self.moving:

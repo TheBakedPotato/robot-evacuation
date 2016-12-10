@@ -1,6 +1,6 @@
 import pygame
 
-import colours
+import colours, destination
 
 class Ring:
     def __init__(self, pos, radius):
@@ -15,14 +15,8 @@ class Ring:
         self.ring_rect.centerx = self.pos[0]
         self.ring_rect.centery = self.pos[1]
 
-        rect = pygame.Rect((0, 0), (10, 10))
-        self.exit_surf = pygame.Surface(rect.size, pygame.SRCALPHA)
-        self.exit_surf.fill((255, 255, 255, 0))
-        pygame.draw.rect(self.exit_surf, colours.RED, pygame.Rect((0, 0,), (10, 10)))
-        self.exit_rect = self.exit_surf.get_rect()
-        self.exit_rect.centerx = self.pos[0] + radius
-        self.exit_rect.centery = self.pos[1]
+        self.exit = destination.Destination((pos[0] + radius, pos[1]))
 
     def draw(self, surface):
         surface.blit(self.ring_surf, self.ring_rect)
-        surface.blit(self.exit_surf, self.exit_rect)
+        self.exit.draw(surface)
