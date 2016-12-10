@@ -6,7 +6,7 @@ class Robot:
     def __init__(self, speed, startPos, angle=0):
         rect = pygame.Rect((0, 0), (20, 20))
 
-        self._moving = False
+        self.moving = False
 
         self.speed = 100
         self.surf = pygame.Surface(rect.size)
@@ -16,8 +16,8 @@ class Robot:
         self.angle = angle
 
     def findPoint(self, start, distance, timeDelta):
-        if not self._moving:
-            self._moving = True
+        if not self.moving:
+            self.moving = True
 
         self.centerx += self.speed * timeDelta * math.cos(self.angle)
         self.centery += self.speed * timeDelta * math.sin(self.angle)
@@ -28,8 +28,8 @@ class Robot:
         return math.sqrt((self.rect.centerx - start[0]) ** 2 + (self.rect.centery - start[1]) ** 2) >= distance
 
     def findExit(self, center, radius, timeDelta, exit, direction):
-        if not self._moving:
-            self._moving = True
+        if not self.moving:
+            self.moving = True
 
         self.angle += direction * timeDelta * (self.speed / radius)
         self.rect.centerx = radius * math.cos(self.angle) + center[0]
