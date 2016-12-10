@@ -67,30 +67,23 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
+    angle = - math.pi/3
     ringPos = (screen_width / 2, screen_height / 2)
-    robot = robot.Robot(100, ringPos)
+    robot1 = robot.Robot(100, ringPos, angle)
+    robot2 = robot.Robot(100, ringPos, angle)
 
-    screen.blit(robot.surf, robot.rect)
+    screen.blit(robot1.surf, robot1.rect)
+    screen.blit(robot2.surf, robot2.rect)
     pygame.display.update()
 
     clock = pygame.time.Clock()
-    moveX = 0;
-    moveY = 0;
     collided = False
     lapped = False
     ringRadius = 150
-    angle = 0
 
-    x = ringRadius * math.cos(math.radians(angle)) + screen_width / 2
-    y = ringRadius * math.sin(math.radians(angle)) + screen_height / 2
-    print (x, y)
-
-    pps = (100 * math.cos(math.radians(angle)), 100 * math.sin(math.radians(angle)))
     rps = 100.0 / 150.0
 
     startTime = time()
-
-    point = None
 
     while True:
         for event in pygame.event.get():
@@ -104,19 +97,14 @@ if __name__ == "__main__":
         timeDelta /= 1000.0
 
         if not collided:
-            collided = robot.findPerimeter(ringPos, ringRadius, timeDelta, angle)
+            collided = robot1.findPerimeter(ringPos, ringRadius, timeDelta)
+            robot2.findPerimeter(ringPos, ringRadius, timeDelta)
             if collided:
-                point = (robot.rect.centerx, robot.rect.centery)
                 print "Elapsed Time: " + str(time() - startTime)
         else:
-            startTime = time()
-            angle += timeDelta * rps
-            robot.rect.centerx = ringRadius * math.cos(angle) + screen_width / 2
-            robot.rect.centery = ringRadius * math.sin(angle) + screen_height / 2
-            lapped = (robot.rect.centerx == point[0]) and (robot.rect.centery == point[1])
+            robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, 1)
+            robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, -1)
 
-            if lapped:
-                print "Elapsed Time: " + str(time() - startTime)
-
-        screen.blit(robot.surf, robot.rect)
+        screen.blit(robot1.surf, robot1.rect)
+        screen.blit(robot2.surf, robot2.rect)
         pygame.display.update()
