@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
-    angle = 0
+    angle = 37 * math.pi / 20
     ringPos = (screen_width / 2, screen_height / 2)
     exitPos = (200, 200)
     ringRadius = 150
@@ -109,8 +109,6 @@ if __name__ == "__main__":
             evacuated = r1Evac or r2Evac
             if evacuated:
                 print "Elapsed Time: " + str(time() - startTime)
-                print (robot1.centerx, robot1.centery)
-                print (robot2.centerx, robot2.centery)
 
         screen.blit(robot1.surf, robot1.rect)
         screen.blit(robot2.surf, robot2.rect)

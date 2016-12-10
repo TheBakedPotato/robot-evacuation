@@ -33,10 +33,10 @@ class Robot:
         dx = self.rect.centerx - destination.rect.centerx
         dy = self.rect.centery - destination.rect.centery
 
-        area1 = self.mask.scale((10,10)).overlap_area(destination.mask,(dx, dy))
-        area2 = self.mask.scale((10,10)).overlap_area(destination.mask,(-dx, -dy))
-        area3 = self.mask.scale((10,10)).overlap_area(destination.mask,(-dx, dy))
-        area4 = self.mask.scale((10,10)).overlap_area(destination.mask,(dx, -dy))
+        area1 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(dx, dy))
+        area2 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(-dx, -dy))
+        area3 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(-dx, dy))
+        area4 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(dx, -dy))
         
         return max([ area1, area2, area3, area4 ])
 
