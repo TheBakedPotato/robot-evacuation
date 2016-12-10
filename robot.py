@@ -17,7 +17,7 @@ class Robot:
         self.rect.centery = startPos[1]
         self.angle = angle
 
-    def findPerimeter(self, start, radius, timeDelta):
+    def findPoint(self, start, distance, timeDelta):
         if not self._moving:
             self._moving = True
             self._moveX = 0
@@ -34,9 +34,12 @@ class Robot:
             self.rect = self.rect.move(0, self._moveY)
             self._moveY = 0
 
-        return math.sqrt((self.rect.centerx - start[0]) ** 2 + (self.rect.centery - start[1]) ** 2) >= radius
+        return math.sqrt((self.rect.centerx - start[0]) ** 2 + (self.rect.centery - start[1]) ** 2) >= distance
 
-    def findExit(self, center, radius, timeDelta, direction):
+    def findExit(self, center, radius, timeDelta, exit, direction):
+        if not self._moving:
+            self._moving = True
+
         self.angle += direction * timeDelta * (self.speed / radius)
         self.rect.centerx = radius * math.cos(self.angle) + center[0]
         self.rect.centery = radius * math.sin(self.angle) + center[1]

@@ -77,11 +77,13 @@ if __name__ == "__main__":
     pygame.display.update()
 
     clock = pygame.time.Clock()
-    collided = False
-    lapped = False
+    foundPerimeter = False
+    evacuated = False
     ringRadius = 150
 
     rps = 100.0 / 150.0
+
+    exitPos = (175, 200)
 
     startTime = time()
 
@@ -96,15 +98,18 @@ if __name__ == "__main__":
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        if not collided:
-            collided = robot1.findPerimeter(ringPos, ringRadius, timeDelta)
-            robot2.findPerimeter(ringPos, ringRadius, timeDelta)
-            if collided:
+        if not foundPerimeter:
+            foundPerimeter = robot1.findPoint(ringPos, ringRadius, timeDelta)
+            robot2.findPoint(ringPos, ringRadius, timeDelta)
+            if foundPerimeter:
                 print "Elapsed Time: " + str(time() - startTime)
         else:
-            robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, 1)
-            robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, -1)
+            r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, exitPos, 1)
+            r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, exitPos, -1)
 
-        screen.blit(robot1.surf, robot1.rect)
-        screen.blit(robot2.surf, robot2.rect)
-        pygame.display.update()
+            evacuated = r1Evac and r2Evac
+
+        if not evacuated:
+            screen.blit(robot1.surf, robot1.rect)
+            screen.blit(robot2.surf, robot2.rect)
+            pygame.display.update()
