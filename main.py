@@ -3,6 +3,8 @@
 # Pygame and external libraries
 import pygame, sys, math
 
+from time import time
+
 from pygame.locals import *
 
 # Custom modules
@@ -65,9 +67,8 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
-    robot = robot.Robot()
-    
-    robot.rect = robot.rect.move(screen_width / 2 - robot.rect.width / 2, screen_height / 2 - robot.rect.height / 2)
+    ringPos = (screen_width / 2, screen_height / 2)
+    robot = robot.Robot(100, ringPos)
 
     screen.blit(robot.surf, robot.rect)
     pygame.display.update()
@@ -76,15 +77,20 @@ if __name__ == "__main__":
     moveX = 0;
     moveY = 0;
     collided = False
+    lapped = False
     ringRadius = 150
-    ringPos = (screen_width / 2, screen_height / 2)
-    angle = 32
+    angle = 0
 
-    x = round(ringRadius * math.cos(math.radians(angle)) + screen_width / 2)
-    y = round(ringRadius * math.sin(math.radians(angle)) + screen_height / 2)
+    x = ringRadius * math.cos(math.radians(angle)) + screen_width / 2
+    y = ringRadius * math.sin(math.radians(angle)) + screen_height / 2
     print (x, y)
 
-    pps = (round(100 * math.cos(math.radians(angle))), round(100 * math.sin(math.radians(angle))))
+    pps = (100 * math.cos(math.radians(angle)), 100 * math.sin(math.radians(angle)))
+    rps = 100.0 / 150.0
+
+    startTime = time()
+
+    point = None
 
     while True:
         for event in pygame.event.get():
@@ -97,29 +103,34 @@ if __name__ == "__main__":
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        moveX += pps[0] * timeDelta
-        moveY += pps[1] * timeDelta
+        # moveX += pps[0] * timeDelta
+        # moveY += pps[1] * timeDelta
         
-        if (moveX >= 1):
-            robot.rect = robot.rect.move(1, 0)
-            moveX = 0
-        elif (moveX <= -1):
-            robot.rect = robot.rect.move(-1, 0)
-            moveX = 0
+        # if (moveX >= 1) or (moveX <= -1):  
+        #     robot.rect = robot.rect.move(moveX, 0)
+        #     moveX = 0
 
-        if (moveY >= 1):
-            robot.rect = robot.rect.move(0, 1)
-            moveY = 0
-        elif (moveY <= -1):
-            robot.rect = robot.rect.move(0, -1)
-            moveY = 0
+        # if (moveY >= 1) or (moveY <= -1):
+        #     robot.rect = robot.rect.move(0, moveY)
+        #     moveY = 0
+
 
         if not collided:
             screen.blit(robot.surf, robot.rect)
-            collided = math.sqrt((robot.rect.centerx - ringPos[0]) ** 2 + (robot.rect.centery - ringPos[1]) ** 2) >= ringRadius
+            # collided = math.sqrt((robot.rect.centerx - ringPos[0]) ** 2 + (robot.rect.centery - ringPos[1]) ** 2) >= ringRadius
+            collided = robot.findPerimeter(ringPos, ringRadius, timeDelta, angle)
             pygame.display.update()
             if collided:
-                print (robot.rect.centerx, robot.rect.centery)
-
+                point = (robot.rect.centerx, robot.rect.centery)
+                print "Elapsed Time: " + str(time() - startTime)
         else:
-            
+            startTime = time()
+            angle += timeDelta * rps
+            robot.rect.centerx = ringRadius * math.cos(angle) + screen_width / 2
+            robot.rect.centery = ringRadius * math.sin(angle) + screen_height / 2
+            lapped = (robot.rect.centerx == point[0]) and (robot.rect.centery == point[1])
+            screen.blit(robot.surf, robot.rect)
+            pygame.display.update()
+
+            if lapped:
+                print "Elapsed Time: " + str(time() - startTime)
