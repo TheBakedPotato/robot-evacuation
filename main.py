@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
-    angle = - 3 * math.pi / 4
+    angle = 0
     ringPos = (screen_width / 2, screen_height / 2)
     exitPos = (200, 200)
     ringRadius = 150
@@ -101,13 +101,17 @@ if __name__ == "__main__":
             robot2.findPoint(ringPos, ringRadius, timeDelta)
             if foundPerimeter:
                 print "Elapsed Time: " + str(time() - startTime)
-        else:
-            r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, exitPos, 1)
-            r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, exitPos, -1)
+                startTime = time()
+        elif not evacuated:
+            r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
+            r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
 
-            evacuated = r1Evac and r2Evac
+            evacuated = r1Evac or r2Evac
+            if evacuated:
+                print "Elapsed Time: " + str(time() - startTime)
+                print (robot1.centerx, robot1.centery)
+                print (robot2.centerx, robot2.centery)
 
-        if not evacuated:
-            screen.blit(robot1.surf, robot1.rect)
-            screen.blit(robot2.surf, robot2.rect)
-            pygame.display.update()
+        screen.blit(robot1.surf, robot1.rect)
+        screen.blit(robot2.surf, robot2.rect)
+        pygame.display.update()
