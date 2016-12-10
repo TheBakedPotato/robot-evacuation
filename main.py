@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
-    angle = - math.pi/3
+    angle = - math.pi / 4
     ringPos = (screen_width / 2, screen_height / 2)
     robot1 = robot.Robot(100, ringPos, angle)
     robot2 = robot.Robot(100, ringPos, angle)
