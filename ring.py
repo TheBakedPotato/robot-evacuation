@@ -15,14 +15,27 @@ class Ring:
         self.rect.centerx = self.pos[0]
         self.rect.centery = self.pos[1]
 
-        if not exitPos:
-            angle = (2 * math.pi) * random.random()
-            exitX = self.pos[0] + radius * math.cos(angle)
-            exitY = self.pos[1] + radius * math.sin(angle)
-            exitPos = (exitX, exitY)
-
-        self.exit = destination.Destination(exitPos)
+        self.exit = destination.Destination(self.pointOnRing())
 
     def draw(self, surface):
         surface.blit(self.surf, self.rect)
         self.exit.draw(surface)
+
+    def pointOnRingAngle(self, angle):
+        x = self.pos[0] + self.radius * math.cos(angle)
+        y = self.pos[1] + self.radius * math.sin(angle)
+        return (x, y)
+
+    def pointOnRing(self):
+        angle = (2 * math.pi) * random.random()
+        return self.pointOnRingAngle(angle)
+
+    def pointInRingAngle(self, angle):
+        tempRadius = self.radius * random.random()
+        x = self.pos[0] + tempRadius * math.cos(angle)
+        y = self.pos[1] + tempRadius * math.sin(angle)
+        return (x, y)
+
+    def pointInRing(self):
+        angle = (2 * math.pi) * random.random()
+        return self.pointInRingAngle(angle)

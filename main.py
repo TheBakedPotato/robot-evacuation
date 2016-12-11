@@ -51,9 +51,8 @@ class REMain:
         sys.exit()
 
 def setupCase1(robots, ring):
-    angle = (2 * math.pi) * random.random()
     start = (ring.rect.centerx, ring.rect.centery)
-    dest = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
+    dest = ring.pointOnRing()
 
     robots.append(robot.Robot(100, start, 1))
     robots.append(robot.Robot(100, start, -1))
@@ -62,10 +61,9 @@ def setupCase1(robots, ring):
 
 def setupCase2(robots, ring):
     angle = (2 * math.pi) * random.random()
-    factor = random.random()
     start1 = (ring.rect.centerx, ring.rect.centery)
-    start2 = (ringRadius * math.cos(angle) * factor + ringPos[0], ringRadius * math.sin(angle) * factor + ringPos[1])
-    dest = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
+    start2 = ring.pointInRingAngle(angle)
+    dest = ring.pointOnRingAngle(angle)
 
     robots.append(robot.Robot(100, start1, 1))
     robots.append(robot.Robot(100, start2, -1))
@@ -73,6 +71,8 @@ def setupCase2(robots, ring):
     return dest
 
 def setupCase3(robots, ring):
+
+
     return
 
 def moveRobots(ring, robots, timeDelta):
