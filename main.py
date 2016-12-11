@@ -126,11 +126,10 @@ def moveRobots(point, ring, robots, timeDelta):
         elif not robot.onPerimeter:
             robot.onPerimeter = robot.findPoint(point, timeDelta)
         elif not robot.evacuated:
-            robot.evacuated = robot.findExit(ringPos, float(ringRadius), timeDelta, ring.exit)
+            robot.evacuated = robot.findExit(ring, timeDelta)
             if robot.evacuated:
                 exitFound = True
 
-    print evacuated
     return evacuated
 
 if __name__ == "__main__":
@@ -167,8 +166,6 @@ if __name__ == "__main__":
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
         ring.draw(screen)
-        # pygame.draw.line(screen, (255, 0, 0), (robots[0].centerx, robots[0].centery), (robots[1].centerx, robots[1].centery), 5)
-        # pygame.draw.line(screen, (0, 255, 0), points[0], points[1], 5)
 
         for robot in robots:
             robot.draw(screen)

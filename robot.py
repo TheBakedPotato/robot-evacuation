@@ -14,7 +14,7 @@ class Robot:
         self.rect.centery = self.centery = float(startPos[1])
 
         self.moving = False
-        self.speed = 100
+        self.speed = 100.0
         self.dest = None
         self.angle = None
         self.direction = direction
@@ -55,12 +55,12 @@ class Robot:
         
         return max([ area1, area2, area3, area4 ])
 
-    def findExit(self, center, radius, timeDelta, exit):
+    def findExit(self, ring, timeDelta):
         if not self.moving:
             self.moving = True
 
-        if not self.ringPos == (center[0], center[1]):
-            self.ringPos = (float(center[0]), float(center[1]))
+        if not self.ringPos == (ring.rect.centerx, ring.rect.centery):
+            self.ringPos = (float(ring.rect.centerx), float(ring.rect.centery))
             dx = self.centerx - self.ringPos[0]
             dy = self.centery - self.ringPos[1]
 
@@ -70,16 +70,16 @@ class Robot:
 
         currMaxArea = newMaxArea = 0
 
-        collided = self.rect.colliderect(exit.rect)
+        collided = self.rect.colliderect(ring.exit.rect)
         if collided:
-            currMaxArea = self.collision(exit)
+            currMaxArea = self.collision(ring.exit)
         
-        self.angle += self.direction * timeDelta * (self.speed / radius)
-        self.rect.centerx = self.centerx = radius * math.cos(self.angle) + center[0]
-        self.rect.centery = self.centery = radius * math.sin(self.angle) + center[1]
+        self.angle += self.direction * timeDelta * (self.speed / ring.radius)
+        self.rect.centerx = self.centerx = ring.radius * math.cos(self.angle) + self.ringPos[0]
+        self.rect.centery = self.centery = ring.radius * math.sin(self.angle) + self.ringPos[1]
 
         if collided:
-            newMaxArea = self.collision(exit)
+            newMaxArea = self.collision(ring.exit)
 
         return currMaxArea > newMaxArea and not currMaxArea == 0
 
