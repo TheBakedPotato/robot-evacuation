@@ -71,11 +71,46 @@ def setupCase2(robots, ring):
     return dest
 
 def setupCase3(robots, ring):
+    start1 = ring.pointInRing()
+    start2 = ring.pointInRing()
+
+    slope = calcSlope(start1, start2)
+    if not slope:
+        perpSlope = 0
+    else:
+        perpSlope = (-1) * (1 / slope)
+
+    midPoint = ((start1[0] + start2[0]) / 2, (start1[1] + start2[1]) / 2)
+    yInt = calcIntercept(perpSlope, midPoint)
+
+    dest = None
+    points = ring.intersectionWithLine((perpSlope, yInt))
+    minDist = ring.radius
+    for point in points:
+        dist = math.sqrt((point[0] - midPoint[0]) ** 2 + (point[1] - midPoint[1]) ** 2)
+        if dist < minDist:
+            minDist = dist
+            dest = point
+
+    robots.append(robot.Robot(100, start1, 1))
+    robots.append(robot.Robot(100, start2, -1))
+
+    return dest
+
+def calcSlope(pos1, pos2):
+
+    if pos1[0] == pos2[0]:
+        slope = None
+    else:
+        slope = (float(pos2[1]) - pos1[1]) / (float(pos2[0]) - pos1[0])
+    
+    return slope
+
+def calcIntercept(slope, point):
+    return point[1] - point[0] * slope
 
 
-    return
-
-def moveRobots(ring, robots, timeDelta):
+def moveRobots(point, ring, robots, timeDelta):
     evacuated = False
     exitFound = False
     for robot in robots:
@@ -121,7 +156,7 @@ if __name__ == "__main__":
     evacuated = False
 
     robots = []
-    point = setupCase2(robots, ring)
+    point = setupCase3(robots, ring)
 
     delay = 0
     while True:
@@ -131,6 +166,8 @@ if __name__ == "__main__":
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
         ring.draw(screen)
+        # pygame.draw.line(screen, (255, 0, 0), (robots[0].centerx, robots[0].centery), (robots[1].centerx, robots[1].centery), 5)
+        # pygame.draw.line(screen, (0, 255, 0), points[0], points[1], 5)
 
         for robot in robots:
             robot.draw(screen)
@@ -139,7 +176,7 @@ if __name__ == "__main__":
         timeDelta /= 1000.0
 
         if delay >= 1:
-            evacuated = moveRobots(ring, robots, timeDelta)
+            evacuated = moveRobots(point, ring, robots, timeDelta)
         else:
             delay += timeDelta
 
