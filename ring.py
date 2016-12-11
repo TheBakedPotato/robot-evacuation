@@ -2,7 +2,7 @@ import pygame, random, math
 
 import colours, destination
 
-class Ring:
+class Ring(object):
     def __init__(self, pos, radius, exitPos=None):
         self.pos = pos
         self.radius = radius

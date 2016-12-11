@@ -14,7 +14,7 @@ import colours
 import button
 import line
 
-class REMain:
+class REMain(object):
     """The Main Robot Evacuation Class - This class handles the main 
     initialization and creating of the Game."""
     
@@ -29,8 +29,10 @@ class REMain:
         self.scenarioButtons = []
 
     def setupScenarioButtons(self):
-        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario3))
-
+        self.scenarioButtons.append(button.Button((100,100), (600, 50), self.setupScenario1))
+        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario2))
+        self.scenarioButtons.append(button.Button((100,100), (600, 350), self.setupScenario3))
+    
     def setupScenario1(self):
         start = (self.ring.rect.centerx, self.ring.rect.centery)
         dest = self.ring.pointOnRing()
@@ -90,9 +92,10 @@ class REMain:
 
         return dest
 
-    def setUpRing(self):
+    def setUpRing(self, scenario):
         self.robots = []
         self.ring = ring.Ring((200, self.height / 2), 150)
+        return scenario()
 
     def moveRobots(self, point, timeDelta):
         evacuated = False
@@ -170,8 +173,7 @@ class REMain:
                     delay += timeDelta
 
             elif scenario:
-                self.setUpRing()
-                point = scenario()
+                point = self.setUpRing(scenario)
                 scenario = None
                 run = True
 

@@ -2,7 +2,7 @@ import pygame
 
 import colours
 
-class Destination:
+class Destination(object):
     def __init__(self, pos):
         rect = pygame.Rect((0, 0), (10, 10))
 

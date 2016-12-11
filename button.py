@@ -4,7 +4,7 @@ from pygame.locals import *
 
 import colours
 
-class Button:
+class Button(object):
     def __init__(self, size, position, action):
         rect = pygame.Rect((0, 0), size)
 

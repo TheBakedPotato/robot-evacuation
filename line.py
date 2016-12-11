@@ -1,7 +1,7 @@
 import pygame
 
-class Line:
-    def __init__(self, slope=None, yInt=None):
+class Line(object):
+    def __init__(self, slope, yInt=None):
         self.slope = slope
 
         if yInt:
@@ -9,14 +9,12 @@ class Line:
 
     @classmethod
     def fromPoints(cls, point1, point2):
-        obj = cls()
-
         if point1[0] == point2[0]:
             slope = None
         else:
             slope = (float(point2[1]) - point1[1]) / (float(point2[0]) - point1[0])
         
-        obj.slope = slope
+        obj = cls(slope)
         obj.yInt = obj.findIntercept(point1)
 
         return obj
