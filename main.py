@@ -76,6 +76,7 @@ if __name__ == "__main__":
 
     clock = pygame.time.Clock()
     foundPerimeter = False
+    foundExit = False
     evacuated = False
 
     point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
@@ -98,17 +99,19 @@ if __name__ == "__main__":
         if not foundPerimeter:
             foundPerimeter = robot1.findPoint(point, timeDelta)
             foundPerimeter = robot2.findPoint(point, timeDelta)
-            if foundPerimeter:
-                print "Elapsed Time: " + str(time() - startTime)
-                startTime = time()
-        elif not evacuated:
+
+        elif not foundExit:
             r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
             r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
 
-            evacuated = r1Evac or r2Evac
-            if evacuated:
-                print "Elapsed Time: " + str(time() - startTime)
+            foundExit = r1Evac or r2Evac
+        elif foundExit and not evacuated:
+            if r1Evac:
+                evacuated = robot2.findPoint((robot1.centerx, robot1.centery), timeDelta)
+            elif r2Evac:
+                evacuated = robot1.findPoint((robot2.centerx, robot2.centery), timeDelta)
 
-        screen.blit(robot1.surf, robot1.rect)
-        screen.blit(robot2.surf, robot2.rect)
-        pygame.display.update()
+        if not evacuated:
+            screen.blit(robot1.surf, robot1.rect)
+            screen.blit(robot2.surf, robot2.rect)
+            pygame.display.update()
