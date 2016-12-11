@@ -50,8 +50,7 @@ class REMain:
         pygame.quit()
         sys.exit()
 
-
-def scenario1(ring, robots):
+def run(ring, robots, timeDelta):
     evacuated = False
     exitFound = False
     for robot in robots:
@@ -60,19 +59,18 @@ def scenario1(ring, robots):
             break
 
     for robot in robots:
-        if not robot.onPerimeter:
-            robot.onPerimeter = robot.findPoint(point, timeDelta)
-        elif exitFound and not robot.evacuated:
+        if exitFound and not robot.evacuated:
             if not robot.evacuated:
-                robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
+                robot.onPerimeter = robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
             evacuated = evacuated and robot.evacuated
+        elif not robot.onPerimeter:
+            robot.onPerimeter = robot.findPoint(point, timeDelta)
         elif not robot.evacuated:
             robot.evacuated = robot.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit)
             if robot.evacuated:
                 exitFound = True
 
     return evacuated
-
 
 if __name__ == "__main__":
     # app = REMain()
@@ -96,15 +94,18 @@ if __name__ == "__main__":
 
     robotStartPos = ringPos
 
-    robots = [robot.Robot(100, ringPos, 1), robot.Robot(100, ringPos, -1)]
 
     clock = pygame.time.Clock()
     evacuated = False
 
     point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
     ring = ring.Ring(ringPos, ringRadius)
-    startTime = time()
 
+    factor = random.random()
+    robotPoint = (ringRadius * math.cos(angle) * factor + ringPos[0], ringRadius * math.sin(angle) * factor + ringPos[1])
+    robots = [robot.Robot(100, ringPos, 1), robot.Robot(100, robotPoint, -1)]
+
+    delay = 0
     while True:
         for event in pygame.event.get():
             if event.type in (QUIT, KEYDOWN):
@@ -119,7 +120,9 @@ if __name__ == "__main__":
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        evacuated = scenario1(ring, robots)
+        delay += timeDelta
+        if delay >= 2:
+            evacuated = run(ring, robots, timeDelta)
 
         if not evacuated:
             pygame.display.update()
