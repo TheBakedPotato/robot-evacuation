@@ -20,6 +20,7 @@ class Robot:
         self.direction = direction
         self.onPerimeter = False
         self.evacuated = False
+        self.ringPos = None
 
     def findPoint(self, pos, timeDelta):
         if not self.dest == pos:
@@ -57,6 +58,15 @@ class Robot:
     def findExit(self, center, radius, timeDelta, exit):
         if not self.moving:
             self.moving = True
+
+        if not self.ringPos == (center[0], center[1]):
+            self.ringPos = (float(center[0]), float(center[1]))
+            dx = self.centerx - self.ringPos[0]
+            dy = self.centery - self.ringPos[1]
+
+            self.angle = math.atan2(dy, dx)
+            if self.angle < 0:
+                self.angle += 2 * math.pi
 
         currMaxArea = newMaxArea = 0
 

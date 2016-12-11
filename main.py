@@ -126,10 +126,11 @@ def moveRobots(point, ring, robots, timeDelta):
         elif not robot.onPerimeter:
             robot.onPerimeter = robot.findPoint(point, timeDelta)
         elif not robot.evacuated:
-            robot.evacuated = robot.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit)
+            robot.evacuated = robot.findExit(ringPos, float(ringRadius), timeDelta, ring.exit)
             if robot.evacuated:
                 exitFound = True
 
+    print evacuated
     return evacuated
 
 if __name__ == "__main__":
