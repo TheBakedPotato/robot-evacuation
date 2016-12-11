@@ -40,19 +40,6 @@ class Robot:
 
         return (currDistance - newDistance) < 0
 
-
-    # def findPoint(self, start, distance, timeDelta):
-    #     if not self.moving:
-    #         self.moving = True
-
-    #     self.centerx += self.speed * timeDelta * math.cos(self.angle)
-    #     self.centery += self.speed * timeDelta * math.sin(self.angle)
-
-    #     self.rect.centerx = self.centerx;
-    #     self.rect.centery = self.centery
-
-    #     return math.sqrt((self.rect.centerx - start[0]) ** 2 + (self.rect.centery - start[1]) ** 2) >= distance
-
     def collision(self, destination):
         dx = self.rect.centerx - destination.rect.centerx
         dy = self.rect.centery - destination.rect.centery
