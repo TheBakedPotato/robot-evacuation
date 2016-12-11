@@ -12,6 +12,7 @@ import ring
 import robot
 import colours
 import button
+import line
 
 class REMain:
     """The Main Robot Evacuation Class - This class handles the main 
@@ -28,7 +29,7 @@ class REMain:
         self.scenarioButtons = []
 
     def setupScenarioButtons(self):
-        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario2))
+        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario3))
 
     def setupScenario1(self):
         start = (self.ring.rect.centerx, self.ring.rect.centery)
@@ -48,6 +49,37 @@ class REMain:
         start1 = (self.ring.rect.centerx, self.ring.rect.centery)
         start2 = self.ring.pointInRingAngle(angle)
         dest = self.ring.pointOnRingAngle(angle)
+
+        self.robots.append(robot.Robot(100, start1, 1))
+        self.robots.append(robot.Robot(100, start2, -1))
+
+        self.ring.draw(self.screen)
+        for bot in self.robots:
+            bot.draw(self.screen)
+
+        return dest
+
+    def setupScenario3(self):
+        start1 = self.ring.pointInRing()
+        start2 = self.ring.pointInRing()
+
+        slope = calcSlope(start1, start2)
+        if not slope:
+            perpSlope = 0
+        else:
+            perpSlope = (-1) * (1 / slope)
+
+        midPoint = ((start1[0] + start2[0]) / 2, (start1[1] + start2[1]) / 2)
+        yInt = calcIntercept(perpSlope, midPoint)
+
+        dest = None
+        points = self.ring.intersectionWithLine((perpSlope, yInt))
+        minDist = self.ring.radius
+        for point in points:
+            dist = math.sqrt((point[0] - midPoint[0]) ** 2 + (point[1] - midPoint[1]) ** 2)
+            if dist < minDist:
+                minDist = dist
+                dest = point
 
         self.robots.append(robot.Robot(100, start1, 1))
         self.robots.append(robot.Robot(100, start2, -1))
@@ -119,7 +151,6 @@ class REMain:
                 sys.exit()
 
             self.screen.blit(self.bgSurf, self.bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
-            # button.draw(screen)
 
             for btn in self.scenarioButtons:
                 btn.draw(self.screen)
