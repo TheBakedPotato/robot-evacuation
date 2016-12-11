@@ -51,8 +51,28 @@ class REMain:
         sys.exit()
 
 
-def scenario1(surface, ring, robots):
-    return
+def scenario1(ring, robots):
+    evacuated = False
+    exitFound = False
+    for robot in robots:
+        if robot.evacuated:
+            exitFound = True
+            break
+
+    for robot in robots:
+        if not robot.onPerimeter:
+            robot.onPerimeter = robot.findPoint(point, timeDelta)
+        elif exitFound and not robot.evacuated:
+            if not robot.evacuated:
+                robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
+            evacuated = evacuated and robot.evacuated
+        elif not robot.evacuated:
+            robot.evacuated = robot.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit)
+            if robot.evacuated:
+                exitFound = True
+
+    return evacuated
+
 
 if __name__ == "__main__":
     # app = REMain()
@@ -77,12 +97,8 @@ if __name__ == "__main__":
     robotStartPos = ringPos
 
     robots = [robot.Robot(100, ringPos, 1), robot.Robot(100, ringPos, -1)]
-    # robot1 = robot.Robot(100, ringPos)
-    # robot2 = robot.Robot(100, ringPos)
 
     clock = pygame.time.Clock()
-    foundPerimeter = False
-    exitFound = False
     evacuated = False
 
     point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
@@ -99,40 +115,11 @@ if __name__ == "__main__":
 
         for robot in robots:
             robot.draw(screen)
-        # screen.blit(robot1.surf, robot1.rect)
-        # screen.blit(robot2.surf, robot2.rect)
         
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        for robot in robots:
-            if not robot.onPerimeter:
-                robot.onPerimeter = robot.findPoint(point, timeDelta)
-            elif exitFound and not robot.evacuated:
-                if not robot.evacuated:
-                    robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
-                evacuated = evacuated and robot.evacuated
-            elif not robot.evacuated:
-                robot.evacuated = robot.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit)
-                if robot.evacuated:
-                    exitFound = True
-
-        # if not foundPerimeter:
-        #     foundPerimeter = robot1.findPoint(point, timeDelta)
-        #     foundPerimeter = robot2.findPoint(point, timeDelta)
-
-        # elif not exitFound:
-        #     r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
-        #     r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
-
-        #     exitFound = r1Evac or r2Evac
-        # elif exitFound and not evacuated:
-        #     if r1Evac:
-        #         evacuated = robot2.findPoint((robot1.centerx, robot1.centery), timeDelta)
-        #     elif r2Evac:
-        #         evacuated = robot1.findPoint((robot2.centerx, robot2.centery), timeDelta)
+        evacuated = scenario1(ring, robots)
 
         if not evacuated:
-            # screen.blit(robot1.surf, robot1.rect)
-            # screen.blit(robot2.surf, robot2.rect)
             pygame.display.update()
