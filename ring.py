@@ -41,9 +41,9 @@ class Ring:
         return self.pointInRingAngle(angle)
 
     def intersectionWithLine(self, line):
-        a = line[0] ** 2 + 1
-        b = 2 * (line[0] * line[1] - line[0] * self.pos[1] - self.pos[0])
-        c = (self.pos[1] ** 2) - (self.radius ** 2) + (self.pos[0] ** 2) - (2 * line[1] * self.pos[1]) + (line[1] ** 2)
+        a = line.slope ** 2 + 1
+        b = 2 * (line.slope * line.yInt - line.slope * self.pos[1] - self.pos[0])
+        c = (self.pos[1] ** 2) - (self.radius ** 2) + (self.pos[0] ** 2) - (2 * line.yInt * self.pos[1]) + (line.yInt ** 2)
 
         radical = (b ** 2) - (4 * a * c)
         if radical < 0:
@@ -52,7 +52,7 @@ class Ring:
         x1 = ((-b) + math.sqrt(radical)) / (2 * a)
         x2 = ((-b) - math.sqrt(radical)) / (2 * a)
 
-        y1 = line[0] * x1 + line[1]
-        y2 = line[0] * x2 + line[1]
+        y1 = line.slope * x1 + line.yInt
+        y2 = line.slope * x2 + line.yInt
 
         return [(x1, y1), (x2, y2)]

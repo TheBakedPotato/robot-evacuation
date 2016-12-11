@@ -63,17 +63,17 @@ class REMain:
         start1 = self.ring.pointInRing()
         start2 = self.ring.pointInRing()
 
-        slope = calcSlope(start1, start2)
-        if not slope:
+        robotLine = line.Line.fromPoints(start1, start2)
+        if not robotLine.slope:
             perpSlope = 0
         else:
-            perpSlope = (-1) * (1 / slope)
+            perpSlope = (-1) * ( 1 / robotLine.slope)
 
         midPoint = ((start1[0] + start2[0]) / 2, (start1[1] + start2[1]) / 2)
-        yInt = calcIntercept(perpSlope, midPoint)
+        bisector = line.Line.fromSlopeAndPoint(perpSlope, midPoint)
 
         dest = None
-        points = self.ring.intersectionWithLine((perpSlope, yInt))
+        points = self.ring.intersectionWithLine(bisector)
         minDist = self.ring.radius
         for point in points:
             dist = math.sqrt((point[0] - midPoint[0]) ** 2 + (point[1] - midPoint[1]) ** 2)
