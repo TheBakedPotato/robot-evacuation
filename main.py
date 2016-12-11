@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Pygame and external libraries
-import pygame, sys, math
+import pygame, sys, math, random
 
 from time import time
 
@@ -67,19 +67,19 @@ if __name__ == "__main__":
 
     screen.blit(bgSurf, bgRect)
 
-    angle = 37 * math.pi / 20
+    angle = (2 * math.pi) * random.random()
     ringPos = (screen_width / 2, screen_height / 2)
-    exitPos = (200, 200)
     ringRadius = 150
 
-    robot1 = robot.Robot(100, ringPos, angle)
-    robot2 = robot.Robot(100, ringPos, angle)
-    ring = ring.Ring(ringPos, ringRadius)
+    robot1 = robot.Robot(100, ringPos)
+    robot2 = robot.Robot(100, ringPos)
 
     clock = pygame.time.Clock()
     foundPerimeter = False
     evacuated = False
 
+    point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
+    ring = ring.Ring(ringPos, ringRadius, point)
     startTime = time()
 
     while True:
@@ -90,26 +90,26 @@ if __name__ == "__main__":
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
         ring.draw(screen)
         screen.blit(robot1.surf, robot1.rect)
-        screen.blit(robot2.surf, robot2.rect)
-
+        # screen.blit(robot2.surf, robot2.rect)
         
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
         if not foundPerimeter:
-            foundPerimeter = robot1.findPoint(ringPos, ringRadius, timeDelta)
-            robot2.findPoint(ringPos, ringRadius, timeDelta)
+            foundPerimeter = robot1.findPoint(point, timeDelta)
+            # foundPerimeter = robot1.findPoint(ringPos, ringRadius, timeDelta)
+        #     robot2.findPoint(ringPos, ringRadius, timeDelta)
             if foundPerimeter:
                 print "Elapsed Time: " + str(time() - startTime)
-                startTime = time()
-        elif not evacuated:
-            r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
-            r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
+        #         startTime = time()
+        # elif not evacuated:
+        #     r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
+        #     r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
 
-            evacuated = r1Evac or r2Evac
-            if evacuated:
-                print "Elapsed Time: " + str(time() - startTime)
+        #     evacuated = r1Evac or r2Evac
+        #     if evacuated:
+        #         print "Elapsed Time: " + str(time() - startTime)
 
         screen.blit(robot1.surf, robot1.rect)
-        screen.blit(robot2.surf, robot2.rect)
+        # screen.blit(robot2.surf, robot2.rect)
         pygame.display.update()

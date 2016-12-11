@@ -3,7 +3,7 @@ import pygame
 import colours, destination
 
 class Ring:
-    def __init__(self, pos, radius):
+    def __init__(self, pos, radius, exitPos):
         self.pos = pos
         self.radius = radius
 
@@ -15,7 +15,7 @@ class Ring:
         self.ring_rect.centerx = self.pos[0]
         self.ring_rect.centery = self.pos[1]
 
-        self.exit = destination.Destination((pos[0] + radius, pos[1]))
+        self.exit = destination.Destination(exitPos)
 
     def draw(self, surface):
         surface.blit(self.ring_surf, self.ring_rect)
