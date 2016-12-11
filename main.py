@@ -80,7 +80,7 @@ if __name__ == "__main__":
     evacuated = False
 
     point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
-    ring = ring.Ring(ringPos, ringRadius, (500, 200))
+    ring = ring.Ring(ringPos, ringRadius)
     startTime = time()
 
     while True:

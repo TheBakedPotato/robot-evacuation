@@ -1,9 +1,9 @@
-import pygame
+import pygame, random, math
 
 import colours, destination
 
 class Ring:
-    def __init__(self, pos, radius, exitPos):
+    def __init__(self, pos, radius, exitPos=None):
         self.pos = pos
         self.radius = radius
 
@@ -14,6 +14,12 @@ class Ring:
         self.ring_rect = self.ring_surf.get_rect()
         self.ring_rect.centerx = self.pos[0]
         self.ring_rect.centery = self.pos[1]
+
+        if not exitPos:
+            angle = (2 * math.pi) * random.random()
+            exitX = self.pos[0] + radius * math.cos(angle)
+            exitY = self.pos[1] + radius * math.sin(angle)
+            exitPos = (exitX, exitY)
 
         self.exit = destination.Destination(exitPos)
 
