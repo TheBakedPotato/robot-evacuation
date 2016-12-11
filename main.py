@@ -37,37 +37,105 @@ class REMain:
         self.robots.append(robot.Robot(100, start, 1))
         self.robots.append(robot.Robot(100, start, -1))
 
-        self.ring.draw(surface)
+        self.ring.draw(self.screen)
         for bot in self.robots:
-            bot.draw(surface)
+            bot.draw(self.screen)
 
         return dest
+
+    def setUp(self):
+        self.robots = []
+        self.ring = ring.Ring((200, self.height / 2), 150)
+
+    def moveRobots(self, point, timeDelta):
+        evacuated = False
+        exitFound = False
+        for bot in self.robots:
+            if bot.evacuated:
+                exitFound = True
+                break
+
+        for bot in self.robots:
+            if exitFound and not bot.evacuated:
+                if not bot.evacuated:
+                    bot.onPerimeter = bot.evacuated = bot.findPoint((self.ring.exit.rect.centerx, self.ring.exit.rect.centery), timeDelta)
+                evacuated = evacuated and bot.evacuated
+            elif not bot.onPerimeter:
+                bot.onPerimeter = bot.findPoint(point, timeDelta)
+            elif not bot.evacuated:
+                bot.evacuated = bot.findExitOnRing(self.ring, timeDelta)
+                if bot.evacuated:
+                    exitFound = True
+
+        return evacuated
 
     def on_init(self):
         pygame.init()
 
-        screen = pygame.display.set_mode([screen_width,screen_height])
-        bgRect = Rect((0, 0), (screen_width, screen_height))
-        bgSurf = pygame.Surface(bgRect.size)
-        pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
+        self.screen = pygame.display.set_mode([self.width,self.height])
+        self.bgRect = Rect((0, 0), (self.width, self.height))
+        self.bgSurf = pygame.Surface(self.bgRect.size)
+        pygame.draw.rect(self.bgSurf, colours.WHITE, self.bgRect)
 
-        screen.blit(bgSurf, bgRect)
+        self.screen.blit(self.bgSurf, self.bgRect)
+
+        self.setupScenarioButtons()
 
     def main_loop(self):
         """This is the Main Loop of the Game"""
-        if self.on_init() == False:
-            self.running = False
+        self.on_init()
 
-        self.running = True
-        self.ring.draw(self.display_surf)
-        while self.running:
-            for event in pygame.event.get():
-                self.on_event(event)
-            pygame.display.update()
+        point = None
+        scenario = None
+        run = False
+        evacuated = False
 
-        pygame.quit()
-        sys.exit()
+        clock = pygame.time.Clock()
+        delay = 0
 
+        while True:
+            event  = pygame.event.poll()
+            if event:
+                for btn in self.scenarioButtons:
+                    temp = btn.eventHandler(event)
+                    if temp:
+                        scenario = temp
+
+            if event.type in (QUIT, KEYDOWN):
+                sys.exit()
+
+            self.screen.blit(self.bgSurf, self.bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
+            # button.draw(screen)
+
+            for btn in self.scenarioButtons:
+                btn.draw(self.screen)
+
+            timeDelta = clock.tick_busy_loop()
+            timeDelta /= 1000.0
+
+            if run:
+                self.ring.draw(self.screen)
+
+                for bot in self.robots:
+                    bot.draw(self.screen)
+
+                if delay >= 1:
+                    evacuated = self.moveRobots(point, timeDelta)
+                else:
+                    delay += timeDelta
+
+            elif scenario:
+                self.setUp()
+                point = scenario()
+                scenario = None
+                run = True
+
+            if not evacuated:
+                pygame.display.update()
+
+
+
+####################################################################################################3
 def setupCase1(robots, robotRing, surface):
     start = (robotRing.rect.centerx, robotRing.rect.centery)
     dest = robotRing.pointOnRing()
@@ -166,72 +234,72 @@ def setUp(robots):
     return ring.Ring((200, screen_height / 2), 150)
 
 if __name__ == "__main__":
-    # app = REMain()
-    # app.main_loop()
+    app = REMain()
+    app.main_loop()
     
-    pygame.init()
+    # pygame.init()
     
-    screen_width = 700
-    screen_height = 400
+    # screen_width = 700
+    # screen_height = 400
 
-    screen = pygame.display.set_mode([screen_width,screen_height])
-    bgRect = Rect((0, 0), (screen_width, screen_height))
-    bgSurf = pygame.Surface(bgRect.size)
-    pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
-    screen.blit(bgSurf, bgRect)
+    # screen = pygame.display.set_mode([screen_width,screen_height])
+    # bgRect = Rect((0, 0), (screen_width, screen_height))
+    # bgSurf = pygame.Surface(bgRect.size)
+    # pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
+    # screen.blit(bgSurf, bgRect)
 
-    ##################################################################
+    # ##################################################################
 
-    # ringPos = (200, screen_height / 2)
-    # ringRadius = 150
-    # ring = ring.Ring(ringPos, ringRadius)
-
-
-    # point = setupCase3(robots, ring)
-
-    button = button.Button((100,100), (600, 200), setupCase3)
+    # # ringPos = (200, screen_height / 2)
+    # # ringRadius = 150
+    # # ring = ring.Ring(ringPos, ringRadius)
 
 
-    robots = []
-    point = None
-    robotRing = None
-    scenario = None
-    run = False
-    evacuated = False
+    # # point = setupCase3(robots, ring)
 
-    clock = pygame.time.Clock()
-    delay = 0
+    # button = button.Button((100,100), (600, 200), setupCase3)
 
-    while True:
-        event  = pygame.event.poll()
-        if event:
-            scenario = button.eventHandler(event)
-        if event.type in (QUIT, KEYDOWN):
-            sys.exit()
 
-        screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
-        button.draw(screen)
+    # robots = []
+    # point = None
+    # robotRing = None
+    # scenario = None
+    # run = False
+    # evacuated = False
 
-        timeDelta = clock.tick_busy_loop()
-        timeDelta /= 1000.0
+    # clock = pygame.time.Clock()
+    # delay = 0
 
-        if run:
-            robotRing.draw(screen)
+    # while True:
+    #     event  = pygame.event.poll()
+    #     if event:
+    #         scenario = button.eventHandler(event)
+    #     if event.type in (QUIT, KEYDOWN):
+    #         sys.exit()
 
-            for robot in robots:
-                robot.draw(screen)
+    #     screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
+    #     button.draw(screen)
+
+    #     timeDelta = clock.tick_busy_loop()
+    #     timeDelta /= 1000.0
+
+    #     if run:
+    #         robotRing.draw(screen)
+
+    #         for robot in robots:
+    #             robot.draw(screen)
             
 
-            if delay >= 1:
-                evacuated = moveRobots(point, robotRing, robots, timeDelta)
-            else:
-                delay += timeDelta
+    #         if delay >= 1:
+    #             evacuated = moveRobots(point, robotRing, robots, timeDelta)
+    #         else:
+    #             delay += timeDelta
 
-        elif scenario:
-            robotRing = setUp(robots)
-            point = scenario(robots, robotRing, screen)
-            scenario = None
-            run = True
+    #     elif scenario:
+    #         robotRing = setUp(robots)
+    #         point = scenario(robots, robotRing, screen)
+    #         scenario = None
+    #         run = True
 
-        if not evacuated:
-            pygame.display.update()
+    #     if not evacuated:
+    #         pygame.display.update()
