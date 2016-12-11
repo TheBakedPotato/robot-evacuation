@@ -3,20 +3,23 @@ import colours
 import pygame, math
 
 class Robot:
-    def __init__(self, speed, startPos):
+    def __init__(self, speed, startPos, direction):
         rect = pygame.Rect((0, 0), (20, 20))
 
-        self.moving = False
-
-        self.speed = 100
         self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)
         self.surf.fill((255, 255, 255, 0))
         self.rect = pygame.draw.rect(self.surf, colours.BLACK, rect)
+        self.mask = pygame.mask.from_surface(self.surf)
         self.rect.centerx = self.centerx = float(startPos[0])
         self.rect.centery = self.centery = float(startPos[1])
+
+        self.moving = False
+        self.speed = 100
         self.dest = None
         self.angle = None
-        self.mask = pygame.mask.from_surface(self.surf)
+        self.direction = direction
+        self.onPerimeter = False
+        self.evacuated = False
 
     def findPoint(self, pos, timeDelta):
         if not self.dest == pos:
@@ -51,7 +54,7 @@ class Robot:
         
         return max([ area1, area2, area3, area4 ])
 
-    def findExit(self, center, radius, timeDelta, exit, direction):
+    def findExit(self, center, radius, timeDelta, exit):
         if not self.moving:
             self.moving = True
 
@@ -61,7 +64,7 @@ class Robot:
         if collided:
             currMaxArea = self.collision(exit)
         
-        self.angle += direction * timeDelta * (self.speed / radius)
+        self.angle += self.direction * timeDelta * (self.speed / radius)
         self.rect.centerx = self.centerx = radius * math.cos(self.angle) + center[0]
         self.rect.centery = self.centery = radius * math.sin(self.angle) + center[1]
 
@@ -69,3 +72,6 @@ class Robot:
             newMaxArea = self.collision(exit)
 
         return currMaxArea > newMaxArea and not currMaxArea == 0
+
+    def draw(self, surface):
+        surface.blit(self.surf, self.rect)

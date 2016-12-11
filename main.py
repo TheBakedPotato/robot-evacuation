@@ -16,11 +16,10 @@ class REMain:
     """The Main Robot Evacuation Class - This class handles the main 
     initialization and creating of the Game."""
     
-    def __init__(self, width=640,height=480):
+    def __init__(self, width=700,height=400):
         self._running = False
         """Set the window Size"""
         self.size = self.width, self.height = width, height
-        self.display_surf = None
         self.ring = ring.Ring(self.height / 2, (self.width / 2, self.height / 2))
         
     def _on_init(self):
@@ -51,6 +50,10 @@ class REMain:
         pygame.quit()
         sys.exit()
 
+
+def scenario1(surface, ring, robots):
+    return
+
 if __name__ == "__main__":
     # app = REMain()
     # app.main_loop()
@@ -71,12 +74,15 @@ if __name__ == "__main__":
     ringPos = (screen_width / 2, screen_height / 2)
     ringRadius = 150
 
-    robot1 = robot.Robot(100, ringPos)
-    robot2 = robot.Robot(100, ringPos)
+    robotStartPos = ringPos
+
+    robots = [robot.Robot(100, ringPos, 1), robot.Robot(100, ringPos, -1)]
+    # robot1 = robot.Robot(100, ringPos)
+    # robot2 = robot.Robot(100, ringPos)
 
     clock = pygame.time.Clock()
     foundPerimeter = False
-    foundExit = False
+    exitFound = False
     evacuated = False
 
     point = (ringRadius * math.cos(angle) + ringPos[0], ringRadius * math.sin(angle) + ringPos[1])
@@ -90,28 +96,43 @@ if __name__ == "__main__":
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
         ring.draw(screen)
-        screen.blit(robot1.surf, robot1.rect)
-        screen.blit(robot2.surf, robot2.rect)
+
+        for robot in robots:
+            robot.draw(screen)
+        # screen.blit(robot1.surf, robot1.rect)
+        # screen.blit(robot2.surf, robot2.rect)
         
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        if not foundPerimeter:
-            foundPerimeter = robot1.findPoint(point, timeDelta)
-            foundPerimeter = robot2.findPoint(point, timeDelta)
+        for robot in robots:
+            if not robot.onPerimeter:
+                robot.onPerimeter = robot.findPoint(point, timeDelta)
+            elif exitFound and not robot.evacuated:
+                if not robot.evacuated:
+                    robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
+                evacuated = evacuated and robot.evacuated
+            elif not robot.evacuated:
+                robot.evacuated = robot.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit)
+                if robot.evacuated:
+                    exitFound = True
 
-        elif not foundExit:
-            r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
-            r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
+        # if not foundPerimeter:
+        #     foundPerimeter = robot1.findPoint(point, timeDelta)
+        #     foundPerimeter = robot2.findPoint(point, timeDelta)
 
-            foundExit = r1Evac or r2Evac
-        elif foundExit and not evacuated:
-            if r1Evac:
-                evacuated = robot2.findPoint((robot1.centerx, robot1.centery), timeDelta)
-            elif r2Evac:
-                evacuated = robot1.findPoint((robot2.centerx, robot2.centery), timeDelta)
+        # elif not exitFound:
+        #     r1Evac = robot1.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, 1)
+        #     r2Evac = robot2.findExit(ringPos, ringRadius * 1.0, timeDelta, ring.exit, -1)
+
+        #     exitFound = r1Evac or r2Evac
+        # elif exitFound and not evacuated:
+        #     if r1Evac:
+        #         evacuated = robot2.findPoint((robot1.centerx, robot1.centery), timeDelta)
+        #     elif r2Evac:
+        #         evacuated = robot1.findPoint((robot2.centerx, robot2.centery), timeDelta)
 
         if not evacuated:
-            screen.blit(robot1.surf, robot1.rect)
-            screen.blit(robot2.surf, robot2.rect)
+            # screen.blit(robot1.surf, robot1.rect)
+            # screen.blit(robot2.surf, robot2.rect)
             pygame.display.update()
