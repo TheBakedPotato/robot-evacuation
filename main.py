@@ -11,68 +11,94 @@ from pygame.locals import *
 import ring
 import robot
 import colours
+import button
 
 class REMain:
     """The Main Robot Evacuation Class - This class handles the main 
     initialization and creating of the Game."""
     
     def __init__(self, width=700,height=400):
-        self._running = False
+        self.running = False
         """Set the window Size"""
         self.size = self.width, self.height = width, height
-        self.ring = ring.Ring(self.height / 2, (self.width / 2, self.height / 2))
-        
-    def _on_init(self):
+        self.screen = None
+        self.ring = None
+        self.scenario = None
+        self.robots = []
+        self.scenarioButtons = []
+
+    def setupScenarioButtons(self):
+        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario1))
+
+    def setupScenario1(self):
+        start = (self.ring.rect.centerx, self.ring.rect.centery)
+        dest = self.ring.pointOnRing()
+
+        self.robots.append(robot.Robot(100, start, 1))
+        self.robots.append(robot.Robot(100, start, -1))
+
+        self.ring.draw(surface)
+        for bot in self.robots:
+            bot.draw(surface)
+
+        return dest
+
+    def on_init(self):
         pygame.init()
-        self.display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
-        self.display_surf.fill(colours.WHITE)
-        self._running = True
 
-    def _on_cleanup(self):
-        self._running = False
+        screen = pygame.display.set_mode([screen_width,screen_height])
+        bgRect = Rect((0, 0), (screen_width, screen_height))
+        bgSurf = pygame.Surface(bgRect.size)
+        pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
 
-    def _on_event(self, event):
-        if event.type == pygame.QUIT:
-            self._on_cleanup()
+        screen.blit(bgSurf, bgRect)
 
     def main_loop(self):
         """This is the Main Loop of the Game"""
-        if self._on_init() == False:
-            self._running = False
+        if self.on_init() == False:
+            self.running = False
 
-        self._running = True
+        self.running = True
         self.ring.draw(self.display_surf)
-        while self._running:
+        while self.running:
             for event in pygame.event.get():
-                self._on_event(event)
+                self.on_event(event)
             pygame.display.update()
 
         pygame.quit()
         sys.exit()
 
-def setupCase1(robots, ring):
-    start = (ring.rect.centerx, ring.rect.centery)
-    dest = ring.pointOnRing()
+def setupCase1(robots, robotRing, surface):
+    start = (robotRing.rect.centerx, robotRing.rect.centery)
+    dest = robotRing.pointOnRing()
 
     robots.append(robot.Robot(100, start, 1))
     robots.append(robot.Robot(100, start, -1))
 
+    robotRing.draw(surface)
+    for bot in robots:
+        bot.draw(surface)
+
     return dest
 
-def setupCase2(robots, ring):
+def setupCase2(robots, robotRing, surface):
     angle = (2 * math.pi) * random.random()
-    start1 = (ring.rect.centerx, ring.rect.centery)
-    start2 = ring.pointInRingAngle(angle)
-    dest = ring.pointOnRingAngle(angle)
+    start1 = (robotRing.rect.centerx, robotRing.rect.centery)
+    start2 = robotRing.pointInRingAngle(angle)
+    dest = robotRing.pointOnRingAngle(angle)
 
     robots.append(robot.Robot(100, start1, 1))
     robots.append(robot.Robot(100, start2, -1))
 
+    robotRing.draw(surface)
+    for bot in robots:
+        bot.draw(surface)
+
     return dest
 
-def setupCase3(robots, ring):
-    start1 = ring.pointInRing()
-    start2 = ring.pointInRing()
+def setupCase3(robots, robotRing, surface):
+    start1 = robotRing.pointInRing()
+    start2 = robotRing.pointInRing()
 
     slope = calcSlope(start1, start2)
     if not slope:
@@ -84,8 +110,8 @@ def setupCase3(robots, ring):
     yInt = calcIntercept(perpSlope, midPoint)
 
     dest = None
-    points = ring.intersectionWithLine((perpSlope, yInt))
-    minDist = ring.radius
+    points = robotRing.intersectionWithLine((perpSlope, yInt))
+    minDist = robotRing.radius
     for point in points:
         dist = math.sqrt((point[0] - midPoint[0]) ** 2 + (point[1] - midPoint[1]) ** 2)
         if dist < minDist:
@@ -94,6 +120,10 @@ def setupCase3(robots, ring):
 
     robots.append(robot.Robot(100, start1, 1))
     robots.append(robot.Robot(100, start2, -1))
+
+    robotRing.draw(surface)
+    for bot in robots:
+        bot.draw(surface)
 
     return dest
 
@@ -109,28 +139,31 @@ def calcSlope(pos1, pos2):
 def calcIntercept(slope, point):
     return point[1] - point[0] * slope
 
-
-def moveRobots(point, ring, robots, timeDelta):
+def moveRobots(point, robotRing, robots, timeDelta):
     evacuated = False
     exitFound = False
-    for robot in robots:
-        if robot.evacuated:
+    for bot in robots:
+        if bot.evacuated:
             exitFound = True
             break
 
-    for robot in robots:
-        if exitFound and not robot.evacuated:
-            if not robot.evacuated:
-                robot.onPerimeter = robot.evacuated = robot.findPoint((ring.exit.rect.centerx, ring.exit.rect.centery), timeDelta)
-            evacuated = evacuated and robot.evacuated
-        elif not robot.onPerimeter:
-            robot.onPerimeter = robot.findPoint(point, timeDelta)
-        elif not robot.evacuated:
-            robot.evacuated = robot.findExit(ring, timeDelta)
-            if robot.evacuated:
+    for bot in robots:
+        if exitFound and not bot.evacuated:
+            if not bot.evacuated:
+                bot.onPerimeter = bot.evacuated = bot.findPoint((robotRing.exit.rect.centerx, robotRing.exit.rect.centery), timeDelta)
+            evacuated = evacuated and bot.evacuated
+        elif not bot.onPerimeter:
+            bot.onPerimeter = bot.findPoint(point, timeDelta)
+        elif not bot.evacuated:
+            bot.evacuated = bot.findExitOnRing(robotRing, timeDelta)
+            if bot.evacuated:
                 exitFound = True
 
     return evacuated
+
+def setUp(robots):
+    robots = []
+    return ring.Ring((200, screen_height / 2), 150)
 
 if __name__ == "__main__":
     # app = REMain()
@@ -145,38 +178,60 @@ if __name__ == "__main__":
     bgRect = Rect((0, 0), (screen_width, screen_height))
     bgSurf = pygame.Surface(bgRect.size)
     pygame.draw.rect(bgSurf, colours.WHITE, bgRect)
-
     screen.blit(bgSurf, bgRect)
 
-    ringPos = (screen_width / 2, screen_height / 2)
-    ringRadius = 150
-    ring = ring.Ring(ringPos, ringRadius)
+    ##################################################################
 
-    clock = pygame.time.Clock()
-    evacuated = False
+    # ringPos = (200, screen_height / 2)
+    # ringRadius = 150
+    # ring = ring.Ring(ringPos, ringRadius)
+
+
+    # point = setupCase3(robots, ring)
+
+    button = button.Button((100,100), (600, 200), setupCase3)
+
 
     robots = []
-    point = setupCase3(robots, ring)
+    point = None
+    robotRing = None
+    scenario = None
+    run = False
+    evacuated = False
 
+    clock = pygame.time.Clock()
     delay = 0
+
     while True:
-        for event in pygame.event.get():
-            if event.type in (QUIT, KEYDOWN):
-                sys.exit()
+        event  = pygame.event.poll()
+        if event:
+            scenario = button.eventHandler(event)
+        if event.type in (QUIT, KEYDOWN):
+            sys.exit()
 
         screen.blit(bgSurf, bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
-        ring.draw(screen)
+        button.draw(screen)
 
-        for robot in robots:
-            robot.draw(screen)
-        
         timeDelta = clock.tick_busy_loop()
         timeDelta /= 1000.0
 
-        if delay >= 1:
-            evacuated = moveRobots(point, ring, robots, timeDelta)
-        else:
-            delay += timeDelta
+        if run:
+            robotRing.draw(screen)
+
+            for robot in robots:
+                robot.draw(screen)
+            
+
+            if delay >= 1:
+                evacuated = moveRobots(point, robotRing, robots, timeDelta)
+            else:
+                delay += timeDelta
+
+        elif scenario:
+            robotRing = setUp(robots)
+            point = scenario(robots, robotRing, screen)
+            scenario = None
+            run = True
 
         if not evacuated:
             pygame.display.update()

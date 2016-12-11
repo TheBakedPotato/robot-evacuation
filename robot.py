@@ -55,10 +55,7 @@ class Robot:
         
         return max([ area1, area2, area3, area4 ])
 
-    def findExit(self, ring, timeDelta):
-        if not self.moving:
-            self.moving = True
-
+    def findExitOnRing(self, ring, timeDelta):
         if not self.ringPos == (ring.rect.centerx, ring.rect.centery):
             self.ringPos = (float(ring.rect.centerx), float(ring.rect.centery))
             dx = self.centerx - self.ringPos[0]
