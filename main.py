@@ -28,7 +28,7 @@ class REMain:
         self.scenarioButtons = []
 
     def setupScenarioButtons(self):
-        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario1))
+        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario2))
 
     def setupScenario1(self):
         start = (self.ring.rect.centerx, self.ring.rect.centery)
@@ -43,7 +43,22 @@ class REMain:
 
         return dest
 
-    def setUp(self):
+    def setupScenario2(self):
+        angle = (2 * math.pi) * random.random()
+        start1 = (self.ring.rect.centerx, self.ring.rect.centery)
+        start2 = self.ring.pointInRingAngle(angle)
+        dest = self.ring.pointOnRingAngle(angle)
+
+        self.robots.append(robot.Robot(100, start1, 1))
+        self.robots.append(robot.Robot(100, start2, -1))
+
+        self.ring.draw(self.screen)
+        for bot in self.robots:
+            bot.draw(self.screen)
+
+        return dest
+
+    def setUpRing(self):
         self.robots = []
         self.ring = ring.Ring((200, self.height / 2), 150)
 
@@ -76,7 +91,6 @@ class REMain:
         self.bgRect = Rect((0, 0), (self.width, self.height))
         self.bgSurf = pygame.Surface(self.bgRect.size)
         pygame.draw.rect(self.bgSurf, colours.WHITE, self.bgRect)
-
         self.screen.blit(self.bgSurf, self.bgRect)
 
         self.setupScenarioButtons()
@@ -97,9 +111,9 @@ class REMain:
             event  = pygame.event.poll()
             if event:
                 for btn in self.scenarioButtons:
-                    temp = btn.eventHandler(event)
-                    if temp:
-                        scenario = temp
+                    tempScenario = btn.eventHandler(event)
+                    if tempScenario:
+                        scenario = tempScenario
 
             if event.type in (QUIT, KEYDOWN):
                 sys.exit()
@@ -125,7 +139,7 @@ class REMain:
                     delay += timeDelta
 
             elif scenario:
-                self.setUp()
+                self.setUpRing()
                 point = scenario()
                 scenario = None
                 run = True
