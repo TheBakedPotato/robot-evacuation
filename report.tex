@@ -1,0 +1,31 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[margin=0.75in,headheight=1.5em]{geometry}
+
+\begin{document}
+    \begin{center}
+        {\Large\bf Robot Evactuation} \\
+        \vspace{0.25em}
+        {\large COMP 4001}\\
+        \vspace{0.25em}
+        Juhandr\'{e} Knoetze - 100882772 \\
+    \end{center}
+
+    \section{Implementation}
+    \subsection{Pygame}
+        Pygame is a graphics library developed for Python.
+    
+    \subsection{Classes}
+        To implement the robot evacuation, multiple classes were used to represent the various parts of the scenario.
+        
+    \subsubsection{Robot}
+        The Robot class is used to represent the robots in the evacuation. In the Robot class, it has attributes to hold the visual representation of the robot, as well as its coordinate location. There are also attributes to indicate if the robot has encounter the edge of the ring yet, or if it as evacuated.
+        
+        To create the visual component of the Robot, Pygame's Surface and Rect objects are used. A Robot has an instance of a Surface object which is the size of the Robot. The Surface object is what will be drawn on the screen to visually represent the Robot. A rectangle is drawn on the robot's surface of the chosen colour. The Rect instance returned from drawing on the Surface is kept by the Robot and is the object that will be manipulated when moving the Robot across the screen.
+        
+        Additional attributes held by the Robot class are properties such as
+        
+    \section{Algorithms}
+    \subsection{Scenario 1}
+        In the first scenario, both robots start in the center of the circle. 
+\end{document}
