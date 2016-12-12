@@ -46,6 +46,8 @@ class Robot(object):
 
         currDistance = self.checkDistance(self.dest)
         
+        # Populating the traveled list
+        # Making sure a pixel was actually traveled. May sometimes only travel a fraction of a pixel
         if len(self.travelled) > 0:
             lastPos = self.travelled[-1]
             if not (lastPos[0] == self.rect.centerx and lastPos[1] == self.travelled[-1]):
@@ -58,6 +60,9 @@ class Robot(object):
 
         newDistance = self.checkDistance((newX, newY))
 
+        # If the new distance is going to be greater than the current distance, 
+        # then the robot will overshoot it due to its speed
+        # If that happens, just set the new position to the destination
         if currDistance > newDistance:
             self.centerx = newX
             self.centery = newY
@@ -70,10 +75,16 @@ class Robot(object):
 
         return (currDistance - newDistance) < 0
 
+    # Checking a collision based on the bit mask of an object
+    # destination: a destination object
+    # Returns how much the robot is covering the destination
     def collision(self, destination):
         dx = self.rect.centerx - destination.rect.centerx
         dy = self.rect.centery - destination.rect.centery
 
+        # Check area over coverage in all 4 direction
+        # The robot is scaled down to the size of the destination so it only covers if it 
+        # The robot's center is over the destination's center
         area1 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(dx, dy))
         area2 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(-dx, -dy))
         area3 = self.mask.scale(destination.rect.size).overlap_area(destination.mask,(-dx, dy))
@@ -81,7 +92,13 @@ class Robot(object):
         
         return max([ area1, area2, area3, area4 ])
 
+    # Find the exit on a ring
+    # ring: A Ring object the robot needs to find the exit on
+    # timeDelta: the time since the last frame in seconds
+    # Returns whether it is on the exit or not
     def findExitOnRing(self, ring, timeDelta):
+        # If the robot is on the ring for the first time, figure out what the center of the ring is
+        # This will be used to orient the robot to the correct angle to navigate the perimeter
         if not self.ringPos == (ring.rect.centerx, ring.rect.centery):
             self.ringPos = (float(ring.rect.centerx), float(ring.rect.centery))
             dx = self.centerx - self.ringPos[0]
@@ -93,6 +110,8 @@ class Robot(object):
 
         currMaxArea = newMaxArea = 0
 
+        # Populating the traveled list
+        # Making sure a pixel was actually traveled. May sometimes only travel a fraction of a pixel
         if len(self.travelled) > 0:
             lastPos = self.travelled[-1]
             if not (lastPos[0] == self.rect.centerx and lastPos[1] == self.travelled[-1]):
@@ -104,6 +123,7 @@ class Robot(object):
         if collided:
             currMaxArea = self.collision(ring.exit)
 
+        # Moving around the ring based on the angle calculated from the ring center
         self.angle += self.direction * timeDelta * (self.speed / ring.radius)
         self.rect.centerx = self.centerx = ring.radius * math.cos(self.angle) + self.ringPos[0]
         self.rect.centery = self.centery = ring.radius * math.sin(self.angle) + self.ringPos[1]
@@ -111,14 +131,24 @@ class Robot(object):
         if collided:
             newMaxArea = self.collision(ring.exit)
 
+        # If the new max area is greater, then the robot covers more of the exit
+        # Therefore it has found the exit
         return currMaxArea > newMaxArea and not currMaxArea == 0
 
+    # Checks the distance between the robot center to a point
+    # point: (x,y) coordinate
+    # returns the distance to the point
     def checkDistance(self, point):
         return math.sqrt((self.centerx- point[0]) ** 2 + (self.centery - point[1]) ** 2)
 
+    # Draws the robot on a surface
+    # surface: the surface to draw the robot on
     def drawRobot(self, surface):
         surface.blit(self.surf, self.rect)
 
+    # Draws the travelled line on a surface
+    # surface: the surface to draw the travelled line on
     def drawTravelledLine(self, surface):
+        # A line cannot exist of just one point, so the robot needs to travel more than 1 pixel
         if len(self.travelled) > 1:
             pygame.draw.lines(surface, self.colour, False, self.travelled, 3)
