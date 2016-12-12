@@ -2,10 +2,16 @@
 
 \usepackage[margin=0.75in,headheight=1.5em]{geometry}
 \usepackage{graphicx}
+\usepackage{tabu}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+
+\definecolor{thcolor}{RGB}{193,193,193}
+\newcommand{\tableheader}{\rowfont\bf\rowcolor{thcolor!30}}
 
 \begin{document}
     \begin{center}
-        {\Large\bf Robot Evactuation} \\
+        {\Large\bf Robot Evacuation} \\
         \vspace{0.25em}
         {\large COMP 4001}\\
         \vspace{0.25em}
@@ -14,17 +20,102 @@
 
     \section{Implementation}
     \subsection{Pygame}
-        Pygame is a graphics library developed for Python.
+        Pygame is a Python graphics library that provides a variety of objects for drawing and manipulating 2D objects. The two main objects utilized are the \texttt{Surface} and \texttt{Rect} objects. The \texttt{Surface} object is the object that gets drawn on. It holds the shapes and images that will be displayed to the screen. The \texttt{Rect} object is a the smallest (x, y) grid that represents a \texttt{Surface}. The \texttt{Rect} object of a \texttt{Surface} is the actual object that is manipulated and moved around the screen.
     
-    \subsection{Classes}
-        To implement the robot evacuation, multiple classes were used to represent the various parts of the scenario.
-        
+    \subsection{Classes}  
+    \subsubsection{Ring}
+        The \texttt{Ring} object represents the ring the robots are trying to evacuate. A \texttt{Ring} has a \texttt{Surface} that has a circle drawn on to represent the perimeter of the ring. As well, it has a \texttt{Destination} object to represent the exit of the ring. 
+        \newline
+    
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{draw(surface)} \\
+                \texttt{surface} is a Surface object. Draws the Ring on the given \texttt{surface}
+            \item \texttt{pointOnRingAngle(angle)} \\
+                \texttt{angle} is an angle in radians. It returns an (x,y) point on the perimeter of the Ring for the given \texttt{angle}
+            \item \texttt{pointOnRing()} \\
+                Returns a random point on the perimeter of the Ring
+            \item \texttt{pointInRingAngle(angle)} \\
+                \texttt{angle} is angle in radians. It returns an (x,y) point in the Ring that lies on the radius at the given \texttt{angle}
+            \item \texttt{pointInRing()} \\
+                Returns a random point inside the Ring
+            \item \texttt{instersectionWithLine(line)} \\
+                \texttt{line} is a Line object. Returns the points in which \texttt{line} intersects with the perimeter of the Ring
+        \end{itemize}
+
+    
+%         \noindent
+%         \begin{tabu} to \textwidth {>{\bf}l X}
+%             \tableheader{}Method & Purpose \\
+%             draw(surface) & \textit{surface} is a Surface object. Draws the Ring on the given \textit{surface} \\
+%             pointOnRingAngle(angle) & \textit{angle} is an angle in radians. It returns an (x,y) point on the perimeter of the Ring for the given \textit{angle}\\
+%             pointOnRing() & Returns a random point on the perimeter of the Ring \\
+%             pointInRingAngle(angle) & \textit{angle} is angle in radians. It returns an (x,y) point in the Ring that lies on the radius at the given \textit{angle}. \\
+%         \end{tabu}
+
     \subsubsection{Robot}
-        The Robot class is used to represent the robots in the evacuation. In the Robot class, it has attributes to hold the visual representation of the robot, as well as its coordinate location. There are also attributes to indicate if the robot has encounter the edge of the ring yet, or if it as evacuated.
+        The \texttt{Robot} class is used to represent the robots in the evacuation. In the \texttt{Robot} class, it has attributes to hold the visual representation of the \texttt{Robot}, as well as its coordinate location. There are also attributes to indicate if the robot has encounter the edge of the ring yet, or if it as evacuated.
         
-        To create the visual component of the Robot, Pygame's Surface and Rect objects are used. A Robot has an instance of a Surface object which is the size of the Robot. The Surface object is what will be drawn on the screen to visually represent the Robot. A rectangle is drawn on the robot's surface of the chosen colour. The Rect instance returned from drawing on the Surface is kept by the Robot and is the object that will be manipulated when moving the Robot across the screen.
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{findPoint(pos, timeDelta)} \\
+                \texttt{pos} is a an (x,y) coordinate and \texttt{timeDelta} is the change in time since the last frame in milliseconds. Moves the robot closer to the \texttt{pos} based on the \texttt{timeDelta} and returns whether it is on the \texttt{pos} or not.
+            \item \texttt{collision(destination)} \\
+                \texttt{destination} is an object that has a bitmask. It checks to see if the \texttt{destination} and robot have collided.
+            \item \texttt{findExitOnRing(ring, timeDelta)} \\
+                \texttt{ring} is the Ring object the robot is evacuating and \texttt{timeDelta} is the time since the last frame in milliseconds. It moves the robot around the \texttt{ring} until it finds the exit and returns whether it is on the exit or not.
+            \item \texttt{drawRobot(surface)} \\
+                \texttt{surface} is a Surface object. Draws the robot on the given \texttt{surface}
+            \item \texttt{drawTravelled(surface)} \\
+                \texttt{surface} is a Surface object. Draws a line representing the path the robot has traveled.
+        \end{itemize}
+
+    \subsubsection{Line}
+        The \texttt{Line} class represents a line. It has a slope and a y-intercept. It does not have a visual component and is used solely for calculations involving lines.
+    
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{fromPoints(point1, point2)} \\
+                \texttt{point1} and \texttt{point2} are two (x,y) coordinates. It returns a new Line based on \texttt{point1} and \texttt{point2}
+            \item \texttt{fromSlopeAndPoint(slope, point)} \\
+                \texttt{slope} is the slope of a line and \texttt{point} is a point that is on that line. Returns a new Line based on the \texttt{slope} and \texttt{point}
+            \item \texttt{findIntercept(point)} \\
+                \texttt{point} is an (x,y) coordinate. It finds the y-intercept of the line using \texttt{point}
+        \end{itemize}
         
-        Additional attributes held by the Robot class are properties such as
+    \subsection{Destination}
+        The \texttt{Destination} class is a visual representation for a location on the grid.
+                
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{draw(surface)} \\
+                \texttt{surface} is a Surface object. Draws the Destination on the \texttt{surface}
+        \end{itemize}
+
+    \subsection{Button}
+        The \texttt{Button} class is an object that uses an image to represent a button on the screen. \texttt{Button}s are triggered with the \texttt{MOUESUP} event.
+        
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{eventHandler(event)} \\
+                \texttt{event} is an Event object. Returns a function if the Button's event was triggered.
+            \item \texttt{draw(surface)} \\
+                \texttt{surface} is a Surface object. Draws the button on the \texttt{surface}
+        \end{itemize}
+        
+    \subsection{REMain}
+        The \texttt{REMain} class initializes the application. The initializes pygame to create the window of the application. As well, it holds the list of \texttt{Robot}s and the \texttt{Ring} that will be drawn on the screen. As well, it has a list of \texttt{Button}s for selecting the type of scenario to execute as well a list of \texttt{Button}s for running a given scenario once or fifty times.
+
+%         \noindent
+%         \begin{tabu} to \textwidth {>{\bf}l X}
+%             \tableheader{}Method & Purpose \\
+%             findPoint(pos, timeDelta) & \textit{pos} is a an (x,y) coordinate and \textit{timeDelta} is the change in time since the last frame in milliseconds. Moves the robot closer to the \textit{pos} based on the \textit{timeDelta} and returns whether it is on the \textit{pos} or not \\
+%             collision(destination) & \textit{destination} is an object that has a bitmask. It checks to see if the \textit{destination} and robot have collided \\
+%             findExitOnRing(ring, timeDelta) & \textit{ring} is the Ring object the robot is evacuating and \textit{timeDelta} is the time since the last frame in milliseconds. It moves the robot around the \textit{ring} until it finds the exit and returns whether it is on the exit or not \\
+%             checkDistance(point) & \textit{point} is an (x,y) coordinate. Returns the distance the center of the robot is from the \textit{point} \\
+%             drawRobot(surface) & \textit{surface} is a Surface object. Draws the robot on the given \textit{surface} \\
+%             drawTravelled(surface) & \textit{surface} is a Surface object. Draws a line of points the robot has travelled \\
+%         \end{tabu}
         
     \section{Algorithms}
     \subsection{Scenario 1}
