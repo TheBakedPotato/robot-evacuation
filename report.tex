@@ -22,7 +22,9 @@
     \subsection{Pygame}
         Pygame is a Python graphics library that provides a variety of objects for drawing and manipulating 2D objects. The two main objects utilized are the \texttt{Surface} and \texttt{Rect} objects. The \texttt{Surface} object is the object that gets drawn on. It holds the shapes and images that will be displayed to the screen. The \texttt{Rect} object is a the smallest (x, y) grid that represents a \texttt{Surface}. The \texttt{Rect} object of a \texttt{Surface} is the actual object that is manipulated and moved around the screen.
     
-    \subsection{Classes}  
+    \subsection{Classes}
+        All the visual objects, such as \texttt{Ring} and \texttt{Robot} have \texttt{Surface} and \texttt{Rect} attributes. The \texttt{Rect} attributes are used to keeping track of the objects location as well as determining if there was a collision with another object or not.
+    
     \subsubsection{Ring}
         The \texttt{Ring} object represents the ring the robots are trying to evacuate. A \texttt{Ring} has a \texttt{Surface} that has a circle drawn on to represent the perimeter of the ring. As well, it has a \texttt{Destination} object to represent the exit of the ring. 
         \newline
@@ -54,7 +56,7 @@
 %         \end{tabu}
 
     \subsubsection{Robot}
-        The \texttt{Robot} class is used to represent the robots in the evacuation. In the \texttt{Robot} class, it has attributes to hold the visual representation of the \texttt{Robot}, as well as its coordinate location. There are also attributes to indicate if the robot has encounter the edge of the ring yet, or if it as evacuated.
+        The \texttt{Robot} class is used to represent the robots in the evacuation. In the \texttt{Robot} class, it has attributes to hold the visual representation of the \texttt{Robot}, as well as its coordinate location. There are also attributes to indicate if the robot has encounter the edge of the ring yet, or if it as evacuated. The \texttt{Robot} class also has a \texttt{Mask}. The \texttt{Mask} is a bit mask which is used for determining if a collision has a occurred with an object, such as a \texttt{Destination} object.
         
         \noindent Methods:
         \begin{itemize}
@@ -105,6 +107,28 @@
         
     \subsection{REMain}
         The \texttt{REMain} class initializes the application. The initializes pygame to create the window of the application. As well, it holds the list of \texttt{Robot}s and the \texttt{Ring} that will be drawn on the screen. As well, it has a list of \texttt{Button}s for selecting the type of scenario to execute as well a list of \texttt{Button}s for running a given scenario once or fifty times.
+
+        \noindent Methods:
+        \begin{itemize}
+            \item \texttt{setupCountButtons()} \\
+                Initializes the list of \texttt{Buttons} for determining how many times to run a scenario.
+            \item \texttt{setupScenarioButtons()} \\
+                Initializes the lise of \texttt{Buttons} for handling what scenario to execute.
+            \item \texttt{setupScenario1()} \\
+                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the scenario where both robots start in the center. Returns the robots' first destination as an (x, y) coordinate.
+            \item \texttt{setupScenario2()} \\
+                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the  scenario only one robot starts in the center. Returns the robots' first destination as an (x, y) coordinate.
+            \item \texttt{setupScenario3()} \\
+                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the  scenario only one robot starts in the center. Returns the robots' first destination as an (x, y) coordinate.
+            \item \texttt{setupRing()} \\
+                Initializes the \texttt{Ring} that will be used for the robots to evacuate.
+            \item \texttt{moveRobots(point, timeDelta)} \\
+                \texttt{point} is an (x, y) coordinate and is the position on the perimeter the robots need to head for. \texttt{timeDelta} is the time since the last frame in milliseconds. Moves the \texttt{Robot}s in the \texttt{Ring} based on the \texttt{timeDelta}. Returns whether both \texttt{Robot}s have evacuated the \texttt{Ring} or not.
+            \item \texttt{on\_init()} \\
+                Initializes pygame and setups up the initial window \texttt{Surface} and gives it a background. It is the \texttt{Surface} that the \texttt{Robot}s and \texttt{Ring} will be positioned on.
+            \item \texttt{main\_loop()} \\
+                This is the main loop for the application.
+        \end{itemize}
 
 %         \noindent
 %         \begin{tabu} to \textwidth {>{\bf}l X}
