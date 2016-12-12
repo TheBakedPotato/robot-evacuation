@@ -201,7 +201,7 @@ class REMain(object):
 
                     logStr += str((self.ring.rect.centerx, self.ring.rect.centery)) + ","
                     for bot in self.robots:
-                        logStr += str((bot.centerx, bot.centery)) + ","
+                        logStr += str((int(bot.centerx), int(bot.centery))) + ","
                     logStr += str((self.ring.exit.rect.centerx, self.ring.exit.rect.centery)) + ","
 
                     startTime = time()
@@ -211,7 +211,6 @@ class REMain(object):
                 if evacuated:
                     endTime = time() - startTime
                     logStr += str(endTime) + "\n"
-                    print logStr
                     logger.Logger.write(logStr)
                     logStr = ""
                     runCount -= 1
