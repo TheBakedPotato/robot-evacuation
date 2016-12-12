@@ -27,5 +27,11 @@
         
     \section{Algorithms}
     \subsection{Scenario 1}
-        In the first scenario, both robots start in the center of the circle. 
+        In the first scenario, both robots start in the center of the ring. To start the search for the exit, both robots go in the same direction until the perimeter. Once at the perimeter, the robots will go around the perimeter in opposite directions. If either robot finds the exit, the other robot is notified and the first robot will stop moving. When a robot is notified that the other has found the exit, it cuts the chord. The notified robot will leave the perimeter and head in a straight line towards the first robot.
+        
+    \subsection{Scenario 2}
+        In the second scenario, only one robot, robot $A$, will start in the center of the ring. The other, robot $B$, will be placed randomly in the ring. To evacuate the ring, both robots will go in the same direction towards the perimeter of the ring and start moving at the same time. The direction of travel will be such that robot $A$ is headed towards robot $B$. Since robot $A$ is in the center, it will always have to travel the radius of the ring regardless of where robot $B$ is placed. However, by traveling in that direction, robot $B$ will travel its shortest distance to the perimeter. Once the a robot reaches the perimeter, it will go in one direction and the other robot will always go in the opposite direction. This will ensure that the robots do not cover the same path along the radius, or else it would be equivalent to a single robot evacuation. Similarly to the first scenario, if a robot, say robot $A$, find the exit while searching the perimeter, it will stop moving and notify robot $B$. Robot $B$ will then cut the chord and head straight to the exit.
+    
+    \subsection{Scenario 3}
+        In the third scenario, both robots are placed randomly in the circle. 
 \end{document}
