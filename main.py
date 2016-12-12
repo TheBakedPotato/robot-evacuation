@@ -27,12 +27,23 @@ class REMain(object):
         self.scenario = None
         self.robots = []
         self.scenarioButtons = []
-        self.robotSpeed = 100.0
+        self.countButtons = []
+        self.robotSpeed = 400.0
+
+    def setupCountButtons(self):
+        def returnCount1():
+            return 1
+
+        def returnCount50():
+            return 50
+
+        self.countButtons.append(button.Button("images/count-btn-1.png", (610, 150), returnCount1))
+        self.countButtons.append(button.Button("images/count-btn-50.png", (610, 250), returnCount50))
 
     def setupScenarioButtons(self):
-        self.scenarioButtons.append(button.Button("images/button1.png", (500, 100), self.setupScenario1))
-        self.scenarioButtons.append(button.Button("images/button2.png", (500, 200), self.setupScenario2))
-        self.scenarioButtons.append(button.Button("images/button3.png", (500, 300), self.setupScenario3))
+        self.scenarioButtons.append(button.Button("images/button1.png", (465, 100), self.setupScenario1))
+        self.scenarioButtons.append(button.Button("images/button2.png", (465, 200), self.setupScenario2))
+        self.scenarioButtons.append(button.Button("images/button3.png", (465, 300), self.setupScenario3))
     
     def setupScenario1(self):
         start = (self.ring.rect.centerx, self.ring.rect.centery)
@@ -130,6 +141,9 @@ class REMain(object):
         self.screen.blit(self.bgSurf, self.bgRect)
 
         self.setupScenarioButtons()
+        self.setupCountButtons()
+
+    def on_cleanup(self)
 
     def main_loop(self):
         """This is the Main Loop of the Game"""
@@ -137,52 +151,68 @@ class REMain(object):
         running = True
 
         scenario = None
-        run = True
+        scenarioSelected = False
         evacuated = False
+        runCount = 0
+        point = 0
 
-        runCount = 1
-
-        point = self.setUpRing(self.setupScenario3)
         clock = pygame.time.Clock()
         delay = 0
-
         while running:
             event  = pygame.event.poll()
             if event:
                 for btn in self.scenarioButtons:
                     tempScenario = btn.eventHandler(event)
-                    if tempScenario:
+                    if tempScenario and runCount == 0:
                         scenario = tempScenario
+                        scenarioSelected = True
 
-            if event.type in (QUIT, KEYDOWN):
-                running = False
+                for btn in self.countButtons:
+                    tempCount = btn.eventHandler(event)
+                    if tempCount:
+                        runCount = tempCount()
 
-            self.screen.blit(self.bgSurf, self.bgRect)         # TODO: Check if It is possible to just redraw a portion of the background.
+                if event.type == QUIT:
+                    running = False
+
+            self.screen.blit(self.bgSurf, self.bgRect)
 
             for btn in self.scenarioButtons:
+                btn.draw(self.screen)
+
+            for btn in self.countButtons:
                 btn.draw(self.screen)
 
             timeDelta = clock.tick_busy_loop()
             timeDelta /= 1000.0
 
-            self.ring.draw(self.screen)
+            if self.ring:
+                self.ring.draw(self.screen)
 
-            for bot in self.robots:
-                bot.drawTravelledLine(self.screen)
+            if self.robots:
+                for bot in self.robots:
+                    bot.drawTravelledLine(self.screen)
 
-            for bot in self.robots:
-                bot.drawRobot(self.screen)
+                for bot in self.robots:
+                    bot.drawRobot(self.screen)
 
-            if run:
+            if scenarioSelected and runCount:
+                scenarioSelected = False
+                point = self.setUpRing(scenario)
+
+            if evacuated:
+                evacuated = False
+                if runCount > 0:
+                    point = self.setUpRing(scenario)
+                else:
+                    scenario = None
+            elif runCount and scenario:
                 if delay >= 1:
                     evacuated = self.moveRobots(point, timeDelta)
                     if evacuated:
-                        run = False
+                        runCount -= 1
                 else:
                     delay += timeDelta
-            else:
-                point = self.setUpRing(self.setupScenario1)
-                run = True
 
             pygame.display.update()
 
