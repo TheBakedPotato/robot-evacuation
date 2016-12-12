@@ -5,27 +5,36 @@ import time
 import pygame, math
 
 class Robot(object):
+    # Constructor for the Robot Class
     def __init__(self, speed, startPos, direction, colour):
+        # Rect size to make the surface to draw the robot on
         rect = pygame.Rect((0, 0), (20, 20))
 
         self.colour = colour
-        self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)
-        self.surf.fill((255, 255, 255, 0))
-        self.rect = pygame.draw.rect(self.surf, colour, rect)
-        self.mask = pygame.mask.from_surface(self.surf)
-        self.rect.centerx = self.centerx = float(startPos[0])
-        self.rect.centery = self.centery = float(startPos[1])
+        self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)      # The surface the robot is drawn on
+        self.surf.fill((255, 255, 255, 0))                          # Assigning it 'alpha' pixels which are used in bit mask collisions
+        self.rect = pygame.draw.rect(self.surf, colour, rect)       # Drawing the robot on the surface as square
+        self.mask = pygame.mask.from_surface(self.surf)             # bit mask used for collisions
+        self.rect.centerx = self.centerx = float(startPos[0])       # centerx/centery:
+        self.rect.centery = self.centery = float(startPos[1])       # are floats for more accurary oppose to ints which leads to
+                                                                    # rounding errors and inaccurate location
+        
+        self.speed = float(speed)                                   # speed is pixels per second
+        self.dest = None                                            # an (x, y) point the robot is heading toward
+        self.angle = None                                           # angle oriented to either reach point or go around a ring
+        self.direction = direction                                  # direction it goes around the ring
+        self.onPerimeter = False                                    # if it found the perimeter yet or not
+        self.evacuated = False                                      # if it found the exit yet or not
+        self.ringPos = None                                         # the center of the ring
+        self.travelled = []                                         # a list of points the robot has traveled
 
-        self.speed = float(speed)
-        self.dest = None
-        self.angle = None
-        self.direction = direction
-        self.onPerimeter = False
-        self.evacuated = False
-        self.ringPos = None
-        self.travelled = []
-
+    # Finding a position in the grid and moves towards not already found
+    # pos: (x,y) coordinate of the point
+    # timeDelta: time since the last frame 
     def findPoint(self, pos, timeDelta):
+
+        # If dest is not the pos to head towards, set it
+        # The calculates the angle needed to head towards the point
         if not self.dest == pos:
             self.dest = (float(pos[0]), float(pos[1]))
             dx = self.dest[0] - self.centerx
@@ -35,7 +44,7 @@ class Robot(object):
             if self.angle < 0:
                 self.angle += 2 * math.pi
 
-        currDistance = math.sqrt((self.centerx - self.dest[0]) ** 2 + (self.centery - self.dest[1]) ** 2)
+        currDistance = self.checkDistance(self.dest)
         
         if len(self.travelled) > 0:
             lastPos = self.travelled[-1]

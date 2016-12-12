@@ -61,11 +61,11 @@
         \noindent Methods:
         \begin{itemize}
             \item \texttt{findPoint(pos, timeDelta)} \\
-                \texttt{pos} is a an (x,y) coordinate and \texttt{timeDelta} is the change in time since the last frame in milliseconds. Moves the robot closer to the \texttt{pos} based on the \texttt{timeDelta} and returns whether it is on the \texttt{pos} or not.
+                \texttt{pos} is a an (x,y) coordinate and \texttt{timeDelta} is the change in time since the last frame in seconds. Moves the robot closer to the \texttt{pos} based on the \texttt{timeDelta} and returns whether it is on the \texttt{pos} or not.
             \item \texttt{collision(destination)} \\
                 \texttt{destination} is an object that has a bitmask. It checks to see if the \texttt{destination} and robot have collided.
             \item \texttt{findExitOnRing(ring, timeDelta)} \\
-                \texttt{ring} is the Ring object the robot is evacuating and \texttt{timeDelta} is the time since the last frame in milliseconds. It moves the robot around the \texttt{ring} until it finds the exit and returns whether it is on the exit or not.
+                \texttt{ring} is the Ring object the robot is evacuating and \texttt{timeDelta} is the time since the last frame in seconds. It moves the robot around the \texttt{ring} until it finds the exit and returns whether it is on the exit or not.
             \item \texttt{drawRobot(surface)} \\
                 \texttt{surface} is a Surface object. Draws the robot on the given \texttt{surface}
             \item \texttt{drawTravelled(surface)} \\
@@ -123,7 +123,7 @@
             \item \texttt{setupRing()} \\
                 Initializes the \texttt{Ring} that will be used for the robots to evacuate.
             \item \texttt{moveRobots(point, timeDelta)} \\
-                \texttt{point} is an (x, y) coordinate and is the position on the perimeter the robots need to head for. \texttt{timeDelta} is the time since the last frame in milliseconds. Moves the \texttt{Robot}s in the \texttt{Ring} based on the \texttt{timeDelta}. Returns whether both \texttt{Robot}s have evacuated the \texttt{Ring} or not.
+                \texttt{point} is an (x, y) coordinate and is the position on the perimeter the robots need to head for. \texttt{timeDelta} is the time since the last frame in seconds. Moves the \texttt{Robot}s in the \texttt{Ring} based on the \texttt{timeDelta}. Returns whether both \texttt{Robot}s have evacuated the \texttt{Ring} or not.
             \item \texttt{on\_init()} \\
                 Initializes pygame and setups up the initial window \texttt{Surface} and gives it a background. It is the \texttt{Surface} that the \texttt{Robot}s and \texttt{Ring} will be positioned on.
             \item \texttt{main\_loop()} \\
@@ -133,9 +133,9 @@
 %         \noindent
 %         \begin{tabu} to \textwidth {>{\bf}l X}
 %             \tableheader{}Method & Purpose \\
-%             findPoint(pos, timeDelta) & \textit{pos} is a an (x,y) coordinate and \textit{timeDelta} is the change in time since the last frame in milliseconds. Moves the robot closer to the \textit{pos} based on the \textit{timeDelta} and returns whether it is on the \textit{pos} or not \\
+%             findPoint(pos, timeDelta) & \textit{pos} is a an (x,y) coordinate and \textit{timeDelta} is the change in time since the last frame in seconds. Moves the robot closer to the \textit{pos} based on the \textit{timeDelta} and returns whether it is on the \textit{pos} or not \\
 %             collision(destination) & \textit{destination} is an object that has a bitmask. It checks to see if the \textit{destination} and robot have collided \\
-%             findExitOnRing(ring, timeDelta) & \textit{ring} is the Ring object the robot is evacuating and \textit{timeDelta} is the time since the last frame in milliseconds. It moves the robot around the \textit{ring} until it finds the exit and returns whether it is on the exit or not \\
+%             findExitOnRing(ring, timeDelta) & \textit{ring} is the Ring object the robot is evacuating and \textit{timeDelta} is the time since the last frame in seconds. It moves the robot around the \textit{ring} until it finds the exit and returns whether it is on the exit or not \\
 %             checkDistance(point) & \textit{point} is an (x,y) coordinate. Returns the distance the center of the robot is from the \textit{point} \\
 %             drawRobot(surface) & \textit{surface} is a Surface object. Draws the robot on the given \textit{surface} \\
 %             drawTravelled(surface) & \textit{surface} is a Surface object. Draws a line of points the robot has travelled \\
