@@ -13,6 +13,7 @@ import robot
 import colours
 import button
 import line
+import logger
 
 class REMain(object):
     """The Main Robot Evacuation Class - This class handles the main 
@@ -35,7 +36,7 @@ class REMain(object):
             return 1
 
         def returnCount50():
-            return 50
+            return 15
 
         self.countButtons.append(button.Button("images/count-btn-1.png", (610, 150), returnCount1))
         self.countButtons.append(button.Button("images/count-btn-50.png", (610, 250), returnCount50))
@@ -143,29 +144,26 @@ class REMain(object):
         self.setupScenarioButtons()
         self.setupCountButtons()
 
-    def on_cleanup(self)
-
     def main_loop(self):
         """This is the Main Loop of the Game"""
         self.on_init()
         running = True
 
         scenario = None
-        scenarioSelected = False
-        evacuated = False
+        evacuated = True
         runCount = 0
         point = 0
 
+        logStr = ""
+        startTime = 0
         clock = pygame.time.Clock()
-        delay = 0
         while running:
             event  = pygame.event.poll()
             if event:
                 for btn in self.scenarioButtons:
                     tempScenario = btn.eventHandler(event)
-                    if tempScenario and runCount == 0:
+                    if tempScenario:
                         scenario = tempScenario
-                        scenarioSelected = True
 
                 for btn in self.countButtons:
                     tempCount = btn.eventHandler(event)
@@ -196,27 +194,34 @@ class REMain(object):
                 for bot in self.robots:
                     bot.drawRobot(self.screen)
 
-            if scenarioSelected and runCount:
-                scenarioSelected = False
-                point = self.setUpRing(scenario)
-
             if evacuated:
-                evacuated = False
                 if runCount > 0:
+                    evacuated = False
                     point = self.setUpRing(scenario)
-                else:
-                    scenario = None
+
+                    logStr += str((self.ring.rect.centerx, self.ring.rect.centery)) + ","
+                    for bot in self.robots:
+                        logStr += str((bot.centerx, bot.centery)) + ","
+                    logStr += str((self.ring.exit.rect.centerx, self.ring.exit.rect.centery)) + ","
+
+                    startTime = time()
+
             elif runCount and scenario:
-                if delay >= 1:
-                    evacuated = self.moveRobots(point, timeDelta)
-                    if evacuated:
-                        runCount -= 1
-                else:
-                    delay += timeDelta
+                evacuated = self.moveRobots(point, timeDelta)
+                if evacuated:
+                    endTime = time() - startTime
+                    logStr += str(endTime) + "\n"
+                    print logStr
+                    logger.Logger.write(logStr)
+                    logStr = ""
+                    runCount -= 1
 
             pygame.display.update()
 
-
 if __name__ == "__main__":
+    logger.Logger.init("log-" + str(time()) + ".log")
+    
     app = REMain()
     app.main_loop()
+
+    logger.Logger.close()
