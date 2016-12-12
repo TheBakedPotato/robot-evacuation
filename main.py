@@ -36,7 +36,7 @@ class REMain(object):
             return 1
 
         def returnCount50():
-            return 15
+            return 50
 
         self.countButtons.append(button.Button("images/count-btn-1.png", (610, 150), returnCount1))
         self.countButtons.append(button.Button("images/count-btn-50.png", (610, 250), returnCount50))
@@ -199,10 +199,10 @@ class REMain(object):
                     evacuated = False
                     point = self.setUpRing(scenario)
 
-                    logStr += str((self.ring.rect.centerx, self.ring.rect.centery)) + ","
-                    for bot in self.robots:
-                        logStr += str((int(bot.centerx), int(bot.centery))) + ","
-                    logStr += str((self.ring.exit.rect.centerx, self.ring.exit.rect.centery)) + ","
+                    # logStr += str((self.ring.rect.centerx, self.ring.rect.centery)) + ","
+                    # for bot in self.robots:
+                    #     logStr += str((int(bot.centerx), int(bot.centery))) + ","
+                    # logStr += str((self.ring.exit.rect.centerx, self.ring.exit.rect.centery)) + ","
 
                     startTime = time()
 
