@@ -163,6 +163,7 @@
 
         \subsection{Scenario 2}
         In the second scenario, only one robot, robot $A$, will start in the center of the ring. The other, robot $B$, will be placed randomly in the ring. To evacuate the ring, both robots will go in the same direction towards the perimeter of the ring and start moving at the same time. The direction of travel will be such that robot $A$ is headed towards robot $B$. Since robot $A$ is in the center, it will always have to travel the radius of the ring regardless of where robot $B$ is placed. However, by traveling in that direction, robot $B$ will travel its shortest distance to the perimeter. Once the a robot reaches the perimeter, it will go in one direction and the other robot will always go in the opposite direction. This will ensure that the robots do not cover the same path along the radius, or else it would be equivalent to a single robot evacuation. Similarly to the first scenario, if a robot, say robot $A$, find the exit while searching the perimeter, it will stop moving and notify robot $B$. Robot $B$ will then cut the chord and head straight to the exit.
+        
     
 %         \begin{center}
 %             \frame{\includegraphics[scale=0.5]{images/scenario-2-1.png}}
@@ -176,6 +177,8 @@
             \frame{\includegraphics[scale=0.5]{images/scenario-2-3.png}}
         \end{center}
     
+        The worst starting position for the robots would be if robot $B$ starts in the center with robot $A$. The farther robot $B$ starts away from the center, the less distance it has to travel to get to the exit. Therefore, starting at the center with robot $A$ would be worst case, which is just scenario 1.
+        
     \subsection{Scenario 3}
         In the third scenario, both robots are placed randomly in the circle. To get to the perimeter, the robots head a to a point on the perimeter that is equidistant from both robots. To find this point, the line between the two robots is calculated as well as the midpoint of that line. With the midpoint and line, the line for the perpendicular bisector can be calculated. The perpendicular bisector will intersect the perimeter of the ring at either 1 or 2 points. If it is one point, the robots will head to that one point. If it is two points, the robots will head to the closet point. Once at the perimeter, the rest of the evacuation is identical to the other two scenarios. Both robots head in opposite directions and if one robot finds the exit, the other will cut across the circle to go to the exit.
         
@@ -195,5 +198,9 @@
             \frame{\includegraphics[scale=0.5]{images/scenario-3-4.png}}
         \end{center}
         
+        The worst starting position for the two robots would be if they start a diameter apart on the perimeter. The point that is equidistant from both robots would then be $\sqrt{2}$.
         
+        \begin{center}
+            \includegraphics[scale=0.5]{images/scenario-3-worstcase.png}
+        \end{center}
 \end{document}
