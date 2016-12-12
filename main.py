@@ -27,18 +27,19 @@ class REMain(object):
         self.scenario = None
         self.robots = []
         self.scenarioButtons = []
+        self.robotSpeed = 100.0
 
     def setupScenarioButtons(self):
-        self.scenarioButtons.append(button.Button((100,100), (600, 50), self.setupScenario1))
-        self.scenarioButtons.append(button.Button((100,100), (600, 200), self.setupScenario2))
-        self.scenarioButtons.append(button.Button((100,100), (600, 350), self.setupScenario3))
+        self.scenarioButtons.append(button.Button("images/button1.png", (500, 100), self.setupScenario1))
+        self.scenarioButtons.append(button.Button("images/button2.png", (500, 200), self.setupScenario2))
+        self.scenarioButtons.append(button.Button("images/button3.png", (500, 300), self.setupScenario3))
     
     def setupScenario1(self):
         start = (self.ring.rect.centerx, self.ring.rect.centery)
         dest = self.ring.pointOnRing()
 
-        self.robots.append(robot.Robot(100, start, 1, colours.BLUE))
-        self.robots.append(robot.Robot(100, start, -1, colours.GREEN))
+        self.robots.append(robot.Robot(self.robotSpeed, start, 1, colours.BLUE))
+        self.robots.append(robot.Robot(self.robotSpeed, start, -1, colours.GREEN))
 
         self.ring.draw(self.screen)
         for bot in self.robots:
@@ -52,8 +53,8 @@ class REMain(object):
         start2 = self.ring.pointInRingAngle(angle)
         dest = self.ring.pointOnRingAngle(angle)
 
-        self.robots.append(robot.Robot(100, start1, 1, colours.BLUE))
-        self.robots.append(robot.Robot(100, start2, -1, colours.GREEN))
+        self.robots.append(robot.Robot(self.robotSpeed, start1, 1, colours.BLUE))
+        self.robots.append(robot.Robot(self.robotSpeed, start2, -1, colours.GREEN))
 
         self.ring.draw(self.screen)
         for bot in self.robots:
@@ -83,8 +84,8 @@ class REMain(object):
                 minDist = dist
                 dest = point
 
-        self.robots.append(robot.Robot(100, start1, 1, colours.BLUE))
-        self.robots.append(robot.Robot(100, start2, -1, colours.GREEN))
+        self.robots.append(robot.Robot(self.robotSpeed, start1, 1, colours.BLUE))
+        self.robots.append(robot.Robot(self.robotSpeed, start2, -1, colours.GREEN))
 
         self.ring.draw(self.screen)
         for bot in self.robots:
@@ -98,7 +99,7 @@ class REMain(object):
         return scenario()
 
     def moveRobots(self, point, timeDelta):
-        evacuated = False
+        evacuated = True
         exitFound = False
         for bot in self.robots:
             if bot.evacuated:
@@ -106,16 +107,16 @@ class REMain(object):
                 break
 
         for bot in self.robots:
-            if exitFound and not bot.evacuated:
-                if not bot.evacuated:
-                    bot.onPerimeter = bot.evacuated = bot.findPoint((self.ring.exit.rect.centerx, self.ring.exit.rect.centery), timeDelta)
-                evacuated = evacuated and bot.evacuated
-            elif not bot.onPerimeter:
-                bot.onPerimeter = bot.findPoint(point, timeDelta)
-            elif not bot.evacuated:
-                bot.evacuated = bot.findExitOnRing(self.ring, timeDelta)
-                if bot.evacuated:
-                    exitFound = True
+            if not bot.evacuated:
+                if exitFound:
+                    bot.evacuated = bot.onPerimeter = bot.findPoint((self.ring.exit.rect.centerx, self.ring.exit.rect.centery), timeDelta)
+                elif not bot.onPerimeter:
+                    bot.onPerimeter = bot.findPoint(point, timeDelta)
+                else:
+                    bot.evacuated = bot.findExitOnRing(self.ring, timeDelta)
+
+        for bot in self.robots:
+            evacuated = evacuated and bot.evacuated
 
         return evacuated
 
@@ -135,11 +136,13 @@ class REMain(object):
         self.on_init()
         running = True
 
-        point = None
         scenario = None
-        run = False
+        run = True
         evacuated = False
 
+        runCount = 1
+
+        point = self.setUpRing(self.setupScenario3)
         clock = pygame.time.Clock()
         delay = 0
 
@@ -162,27 +165,27 @@ class REMain(object):
             timeDelta = clock.tick_busy_loop()
             timeDelta /= 1000.0
 
+            self.ring.draw(self.screen)
+
+            for bot in self.robots:
+                bot.drawTravelledLine(self.screen)
+
+            for bot in self.robots:
+                bot.drawRobot(self.screen)
+
             if run:
-                self.ring.draw(self.screen)
-
-                for bot in self.robots:
-                    bot.drawTravelledLine(self.screen)
-
-                for bot in self.robots:
-                    bot.drawRobot(self.screen)
-
                 if delay >= 1:
                     evacuated = self.moveRobots(point, timeDelta)
+                    if evacuated:
+                        run = False
                 else:
                     delay += timeDelta
-
-            elif scenario:
-                point = self.setUpRing(scenario)
-                scenario = None
+            else:
+                point = self.setUpRing(self.setupScenario1)
                 run = True
 
-            if not evacuated:
-                pygame.display.update()
+            pygame.display.update()
+
 
 if __name__ == "__main__":
     app = REMain()

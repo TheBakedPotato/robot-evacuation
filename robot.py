@@ -1,5 +1,7 @@
 import colours
 
+import time
+
 import pygame, math
 
 class Robot(object):
@@ -14,8 +16,7 @@ class Robot(object):
         self.rect.centerx = self.centerx = float(startPos[0])
         self.rect.centery = self.centery = float(startPos[1])
 
-        self.moving = False
-        self.speed = 100.0
+        self.speed = float(speed)
         self.dest = None
         self.angle = None
         self.direction = direction
@@ -43,13 +44,20 @@ class Robot(object):
         else:
             self.travelled.append((self.rect.centerx, self.rect.centery))
 
-        self.centerx += self.speed * timeDelta * math.cos(self.angle)
-        self.centery += self.speed * timeDelta * math.sin(self.angle)
+        newX = self.centerx + self.speed * timeDelta * math.cos(self.angle)
+        newY = self.centery + self.speed * timeDelta * math.sin(self.angle)
+
+        newDistance = self.checkDistance((newX, newY))
+
+        if currDistance > newDistance:
+            self.centerx = newX
+            self.centery = newY
+        else:
+            self.centerx = pos[0]
+            self.centery = pos[1]
 
         self.rect.centerx = self.centerx
         self.rect.centery = self.centery
-
-        newDistance = math.sqrt((self.centerx - self.dest[0]) ** 2 + (self.centery - self.dest[1]) ** 2)
 
         return (currDistance - newDistance) < 0
 
@@ -86,7 +94,7 @@ class Robot(object):
         collided = self.rect.colliderect(ring.exit.rect)
         if collided:
             currMaxArea = self.collision(ring.exit)
-        
+
         self.angle += self.direction * timeDelta * (self.speed / ring.radius)
         self.rect.centerx = self.centerx = ring.radius * math.cos(self.angle) + self.ringPos[0]
         self.rect.centery = self.centery = ring.radius * math.sin(self.angle) + self.ringPos[1]
@@ -95,6 +103,9 @@ class Robot(object):
             newMaxArea = self.collision(ring.exit)
 
         return currMaxArea > newMaxArea and not currMaxArea == 0
+
+    def checkDistance(self, point):
+        return math.sqrt((self.centerx- point[0]) ** 2 + (self.centery - point[1]) ** 2)
 
     def drawRobot(self, surface):
         surface.blit(self.surf, self.rect)
