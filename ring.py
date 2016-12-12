@@ -10,7 +10,7 @@ class Ring(object):
         rect = pygame.Rect((0, 0), (self.radius * 2, self.radius * 2))
         self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)
         self.surf.fill((255, 255, 255, 0))
-        pygame.draw.circle(self.surf, colours.BLUE, (self.radius, self.radius), self.radius, 1)
+        pygame.draw.circle(self.surf, colours.BLACK, (self.radius, self.radius), self.radius, 1)
         self.rect = self.surf.get_rect()
         self.rect.centerx = self.pos[0]
         self.rect.centery = self.pos[1]

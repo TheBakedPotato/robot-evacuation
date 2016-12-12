@@ -3,12 +3,13 @@ import colours
 import pygame, math
 
 class Robot(object):
-    def __init__(self, speed, startPos, direction):
+    def __init__(self, speed, startPos, direction=1, colour):
         rect = pygame.Rect((0, 0), (20, 20))
 
+        self.colour = colour
         self.surf = pygame.Surface(rect.size, pygame.SRCALPHA)
         self.surf.fill((255, 255, 255, 0))
-        self.rect = pygame.draw.rect(self.surf, colours.BLACK, rect)
+        self.rect = pygame.draw.rect(self.surf, colour, rect)
         self.mask = pygame.mask.from_surface(self.surf)
         self.rect.centerx = self.centerx = float(startPos[0])
         self.rect.centery = self.centery = float(startPos[1])
@@ -21,6 +22,7 @@ class Robot(object):
         self.onPerimeter = False
         self.evacuated = False
         self.ringPos = None
+        self.travelled = []
 
     def findPoint(self, pos, timeDelta):
         if not self.dest == pos:
@@ -33,6 +35,13 @@ class Robot(object):
                 self.angle += 2 * math.pi
 
         currDistance = math.sqrt((self.centerx - self.dest[0]) ** 2 + (self.centery - self.dest[1]) ** 2)
+        
+        if len(self.travelled) > 0:
+            lastPos = self.travelled[-1]
+            if not (lastPos[0] == self.rect.centerx and lastPos[1] == self.travelled[-1]):
+                self.travelled.append((self.rect.centerx, self.rect.centery))
+        else:
+            self.travelled.append((self.rect.centerx, self.rect.centery))
 
         self.centerx += self.speed * timeDelta * math.cos(self.angle)
         self.centery += self.speed * timeDelta * math.sin(self.angle)
@@ -67,6 +76,13 @@ class Robot(object):
 
         currMaxArea = newMaxArea = 0
 
+        if len(self.travelled) > 0:
+            lastPos = self.travelled[-1]
+            if not (lastPos[0] == self.rect.centerx and lastPos[1] == self.travelled[-1]):
+                self.travelled.append((self.rect.centerx, self.rect.centery))
+        else:
+            self.travelled.append((self.rect.centerx, self.rect.centery))
+
         collided = self.rect.colliderect(ring.exit.rect)
         if collided:
             currMaxArea = self.collision(ring.exit)
@@ -80,5 +96,9 @@ class Robot(object):
 
         return currMaxArea > newMaxArea and not currMaxArea == 0
 
-    def draw(self, surface):
+    def drawRobot(self, surface):
         surface.blit(self.surf, self.rect)
+
+    def drawTravelledLine(self, surface):
+        if len(self.travelled) > 1:
+            pygame.draw.lines(surface, self.colour, False, self.travelled, 3)
