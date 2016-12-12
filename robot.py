@@ -3,7 +3,7 @@ import colours
 import pygame, math
 
 class Robot(object):
-    def __init__(self, speed, startPos, direction=1, colour):
+    def __init__(self, speed, startPos, direction, colour):
         rect = pygame.Rect((0, 0), (20, 20))
 
         self.colour = colour
