@@ -5,14 +5,21 @@
 \usepackage{enumitem}
 
 \begin{document}
-    \begin{center}
-        {\Large\bf Robot Evacuation} \\
-        \vspace{0.25em}
-        {\large COMP 4001}\\
-        \vspace{0.25em}
-        Juhandr\'{e} Knoetze - 100882772 \\
-    \end{center}
 
+    \begin{titlepage}
+        \vspace*{\stretch{1.0}}
+        \begin{center}
+            \LARGE\textbf{Robot Evacuation} \\
+            \Large\textbf{COMP 4001} \\
+            \large\textit{Juhandr\'{e} Knoetze - 100882772}
+        \end{center}
+        \vspace*{\stretch{2.0}}
+    \end{titlepage}
+
+    \newpage
+    \tableofcontents{}
+    \newpage
+    
     \section{Implementation}
     \subsection{Execution}
         The application depends on the Python library, Pygame. To execute the application, while in the directory with the source, run the command \texttt{python /path/to/main.py}. Running a scenario is done by selecting one of the scenario buttons and one of the count buttons. For example, selecting the ``Both Center'' button and the ``Run 1'' button will run the scenario where both robots start in the center, once. Once it is finished executing the specified count, another scenario and count can be selected.
@@ -144,23 +151,23 @@
         In the first scenario, both robots start in the center of the ring. To start the search for the exit, both robots go in the same direction until the perimeter. Once at the perimeter, the robots will go around the perimeter in opposite directions. The robot that finds the exit stops, and notifies the other robot. When a robot is notified that the other has found the exit, it cuts the chord. The notified robot will leave the perimeter and head in a straight line towards the first robot.
         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-1-1.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-1-1.png}} \\
             The robots are both in the center and heading towards the perimeter. The blue robot is hidden by the green one.
         \end{center}
         
         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-1-2.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-1-2.png}} \\
             Both robots have reached the perimeter and are headed in opposite directions around the perimeter in search of the exit.
         \end{center}
         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-1-3.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-1-3.png}} \\
             The green robot has found the exit and the blue robot is cutting the chord heading towards the exit.
         \end{center}
 
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-1-4.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-1-4.png}} \\
             Both robots have reached the exit.
         \end{center}
 
@@ -170,7 +177,7 @@
         In the second scenario, only one robot, robot $A$, will start in the center of the ring. The other, robot $B$, will be placed randomly in the ring. To evacuate the ring, both robots will go in the same direction towards the perimeter of the ring and start moving at the same time. Robot $A$ and $B$ travel in the same direction to reach the perimeter. Since robot $A$ is in the center, it will always have to travel the radius of the ring regardless of where robot $B$ is placed. However, by traveling in the same direction, robot $B$ will travel its shortest distance to the perimeter. Once the a robot reaches the perimeter, it will go in one direction and the other robot will always go in the opposite direction. This will ensure that the robots do not cover the same path along the radius, or else it would be equivalent to a single robot evacuation. Similarly to the first scenario, if a robot, say robot $A$, find the exit while searching the perimeter, it will stop moving and notify robot $B$. Robot $B$ will then cut the chord and head straight to the exit.
         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-2-1.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-2-1.png}} \\
             The blue robot is starting in the center and the green robot is starting in the circle.
         \end{center}
 %         
@@ -179,7 +186,7 @@
 %         \end{center}
 %         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-2-3.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-2-3.png}} \\
             As shown by the travel lines of the robots, they headed to the perimeter in the same direction and proceeded in the same fashion as scenario 1 to find the exit.
         \end{center}
     
@@ -192,7 +199,7 @@
         
         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-3-1.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-3-1.png}} \\
             The robots are starting scenario 3, and as shown, neither robot started in the center.
         \end{center}
 %         
@@ -205,7 +212,7 @@
 %         \end{center}
 %         
         \begin{center}
-            \frame{\includegraphics[scale=0.5]{images/scenario-3-4.png}} \\
+            \frame{\includegraphics[scale=0.4]{images/scenario-3-4.png}} \\
             As shown by the travel lines, both robots reached the same point on the perimeter. Once at the perimeter, the robots proceeded in a identical fashion as the previous two scenarios to reach the exit.
         \end{center}
         
