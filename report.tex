@@ -2,12 +2,7 @@
 
 \usepackage[margin=0.75in,headheight=1.5em]{geometry}
 \usepackage{graphicx}
-\usepackage{tabu}
 \usepackage{enumitem}
-\usepackage[table]{xcolor}
-
-\definecolor{thcolor}{RGB}{193,193,193}
-\newcommand{\tableheader}{\rowfont\bf\rowcolor{thcolor!30}}
 
 \begin{document}
     \begin{center}
@@ -19,6 +14,9 @@
     \end{center}
 
     \section{Implementation}
+    \subsection{Execution}
+        The application depends on the Python library, Pygame. To execute the application, while in the directory with the source, run the command \texttt{python /path/to/main.py}. Running a scenario is done by selecting one of the scenario buttons and one of the count buttons. For example, selecting the ``Both Center'' button and the ``Run 1'' button will run the scenario where both robots start in the center, once. Once it is finished executing the specified count, another scenario and count can be selected.
+        
     \subsection{Pygame}
         Pygame is a Python graphics library that provides a variety of objects for drawing and manipulating 2D objects. The two main objects utilized are the \texttt{Surface} and \texttt{Rect} objects. The visuals are drawn onto a \texttt{Surface} object. It holds the shapes and images that will be displayed to the screen. The \texttt{Rect} object is a the smallest (x, y) grid that represents a \texttt{Surface}. The \texttt{Rect} object of a \texttt{Surface} is the actual object that is manipulated and moved around the screen.
     
@@ -218,4 +216,12 @@
         \end{center}
         
         After 50 trials, the average evacuation time in the ring is approximately 1.52 seconds. The longest evacuation time is approximately 1.82 seconds.
+        
+        \newpage
+        \section{Appendix}
+        \begin{center}
+            \textbf{Evacuation Times} \\
+            \includegraphics[scale=0.6]{images/stats-graph.png}
+        \end{center}
+
 \end{document}
