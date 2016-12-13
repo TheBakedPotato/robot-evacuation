@@ -113,19 +113,19 @@
             \item \texttt{setupCountButtons()} \\
                 Initializes the list of \texttt{Buttons} for determining how many times to run a scenario.
             \item \texttt{setupScenarioButtons()} \\
-                Initializes the lise of \texttt{Buttons} for handling what scenario to execute.
+                Initializes the list of \texttt{Buttons} for handling what scenario to execute.
             \item \texttt{setupScenario1()} \\
-                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the scenario where both robots start in the center. Returns the robots' first destination as an (x, y) coordinate.
+                Initializes the start locations for the list of \texttt{Robot}s as well as determining their destinations to reach on the perimeter when both \texttt{Robot}s start in the center. Returns the robots' first destination as an (x, y) coordinate.
             \item \texttt{setupScenario2()} \\
-                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the  scenario only one robot starts in the center. Returns the robots' first destination as an (x, y) coordinate.
+                Initializes the start locations for the list of \texttt{Robot}s as well as determining their destinations to reach on the perimeter when one \texttt{Robot} starts in the center. Returns the robots' first destination as an (x, y) coordinate.
             \item \texttt{setupScenario3()} \\
-                Initializes the start locations for the list of \texttt{Robot}s as well determines their destination to reach on the perimeter for the  scenario only one robot starts in the center. Returns the robots' first destination as an (x, y) coordinate.
+                Initializes the start locations for the list of \texttt{Robot}s as well as determining their destinations to reach on the perimeter when both \texttt{Robot}s start in the body of the \texttt{Ring}. Returns the robots' first destination as an (x, y) coordinate.
             \item \texttt{setupRing()} \\
                 Initializes the \texttt{Ring} that will be used for the robots to evacuate.
             \item \texttt{moveRobots(point, timeDelta)} \\
-                \texttt{point} is an (x, y) coordinate and is the position on the perimeter the robots need to head for. \texttt{timeDelta} is the time since the last frame in seconds. Moves the \texttt{Robot}s in the \texttt{Ring} based on the \texttt{timeDelta}. Returns whether both \texttt{Robot}s have evacuated the \texttt{Ring} or not.
+                \texttt{point} is the (x, y) position on the perimeter the \texttt{Robot}s need to reach. \texttt{timeDelta} is the time since the last frame in seconds. Moves the \texttt{Robot}s in the \texttt{Ring} based on the \texttt{timeDelta}. Returns whether or not both \texttt{Robot}s have evacuated the \texttt{Ring}.
             \item \texttt{on\_init()} \\
-                Initializes pygame and setups up the initial window \texttt{Surface} and gives it a background. It is the \texttt{Surface} that the \texttt{Robot}s and \texttt{Ring} will be positioned on.
+                Initializes pygame and sets up the initial window \texttt{Surface} and gives it a background. It is the \texttt{Surface} that the \texttt{Robot}s and \texttt{Ring} will be positioned on.
             \item \texttt{main\_loop()} \\
                 This is the main loop for the application.
         \end{itemize}
@@ -143,7 +143,7 @@
         
     \section{Algorithms}
     \subsection{Scenario 1}
-        In the first scenario, both robots start in the center of the ring. To start the search for the exit, both robots go in the same direction until the perimeter. Once at the perimeter, the robots will go around the perimeter in opposite directions. If either robot finds the exit, the other robot is notified and the first robot will stop moving. When a robot is notified that the other has found the exit, it cuts the chord. The notified robot will leave the perimeter and head in a straight line towards the first robot.
+        In the first scenario, both robots start in the center of the ring. To start the search for the exit, both robots go in the same direction until the perimeter. Once at the perimeter, the robots will go around the perimeter in opposite directions. The robot that finds the exit stops, and notifies the other robot. When a robot is notified that the other has found the exit, it cuts the chord. The notified robot will leave the perimeter and head in a straight line towards the first robot.
         
         \begin{center}
             \frame{\includegraphics[scale=0.5]{images/scenario-1-1.png}} \\
@@ -169,7 +169,7 @@
         After 50 trials, the average evacuation time in the ring is approximately 1.47 seconds. The longest evacuation time is approximately 1.81 seconds.
         
         \subsection{Scenario 2}
-        In the second scenario, only one robot, robot $A$, will start in the center of the ring. The other, robot $B$, will be placed randomly in the ring. To evacuate the ring, both robots will go in the same direction towards the perimeter of the ring and start moving at the same time. The direction of travel will be such that robot $A$ is headed towards robot $B$. Since robot $A$ is in the center, it will always have to travel the radius of the ring regardless of where robot $B$ is placed. However, by traveling in that direction, robot $B$ will travel its shortest distance to the perimeter. Once the a robot reaches the perimeter, it will go in one direction and the other robot will always go in the opposite direction. This will ensure that the robots do not cover the same path along the radius, or else it would be equivalent to a single robot evacuation. Similarly to the first scenario, if a robot, say robot $A$, find the exit while searching the perimeter, it will stop moving and notify robot $B$. Robot $B$ will then cut the chord and head straight to the exit.
+        In the second scenario, only one robot, robot $A$, will start in the center of the ring. The other, robot $B$, will be placed randomly in the ring. To evacuate the ring, both robots will go in the same direction towards the perimeter of the ring and start moving at the same time. Robot $A$ and $B$ travel in the same direction to reach the perimeter. Since robot $A$ is in the center, it will always have to travel the radius of the ring regardless of where robot $B$ is placed. However, by traveling in the same direction, robot $B$ will travel its shortest distance to the perimeter. Once the a robot reaches the perimeter, it will go in one direction and the other robot will always go in the opposite direction. This will ensure that the robots do not cover the same path along the radius, or else it would be equivalent to a single robot evacuation. Similarly to the first scenario, if a robot, say robot $A$, find the exit while searching the perimeter, it will stop moving and notify robot $B$. Robot $B$ will then cut the chord and head straight to the exit.
         
         \begin{center}
             \frame{\includegraphics[scale=0.5]{images/scenario-2-1.png}} \\
@@ -190,7 +190,7 @@
         After 50 trials, the average evacuation time in the ring is approximately 1.24 seconds. The longest evacuation time is approximately 1.78 seconds.
 
     \subsection{Scenario 3}
-        In the third scenario, both robots are placed randomly in the circle. To get to the perimeter, the robots head a to a point on the perimeter that is equidistant from both robots. To find this point, the line between the two robots is calculated as well as the midpoint of that line. With the midpoint and line, the line for the perpendicular bisector can be calculated. The perpendicular bisector will intersect the perimeter of the ring at either 1 or 2 points. If it is one point, the robots will head to that one point. If it is two points, the robots will head to the closet point. Once at the perimeter, the rest of the evacuation is identical to the other two scenarios. Both robots head in opposite directions and if one robot finds the exit, the other will cut across the circle to go to the exit.
+        In the third scenario, both robots are placed randomly in the circle. To get to the perimeter, the robots head a to a point on the perimeter that is equidistant from both robots. To find this point, the line between the two robots is calculated as well as the midpoint of that line. With the midpoint and then line, the line for the perpendicular bisector can be calculated. The perpendicular bisector will intersect the perimeter of the ring at either 1 or 2 points. If it is one point, the robots will head to that one point. If it is two points, the robots will head to the closet point. Once at the perimeter, the rest of the evacuation is identical to the other two scenarios. Both robots head in opposite directions and if one robot finds the exit, the other will cut across the circle towards the exit.
         
         
         \begin{center}
